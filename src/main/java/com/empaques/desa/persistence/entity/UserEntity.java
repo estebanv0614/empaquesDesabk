@@ -1,41 +1,40 @@
 package com.empaques.desa.persistence.entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Data
+@Getter
+@Setter
 @Table(name = "usuario")
-public class UserEntity {
-
+public class UserEntity extends BaseEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_usuario")
-    private Integer idUsuario;
+    private Integer idUser;
 
-    private String unsername;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_persona", nullable = false, unique = true)
+    private PersonEntity person;
 
+    @Column(name = "username", nullable = false, unique = true)
+    private String username;
+
+    @Column(name = "password", nullable = false)
     private String password;
 
-    private Boolean activo;
+    @Column(name = "activo")
+    private Boolean activo = true;
 
-    @Column(name = "fecha_creacion")
-    private LocalDateTime fechaRegistro;
-
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "usuario_rol",
             joinColumns = @JoinColumn(name = "id_usuario"),
             inverseJoinColumns = @JoinColumn(name = "id_rol")
     )
-    private Set<RolEntity> rol;
-
-    @OneToOne(mappedBy = "usuario")
-    private EmployeeEntity employee;
-
-    @OneToOne(mappedBy = "usuario")
-    private ClientEntity client;
+    private Set<RolEntity> roles = new HashSet<>();
 }

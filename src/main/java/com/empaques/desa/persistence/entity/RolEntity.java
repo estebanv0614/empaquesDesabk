@@ -1,20 +1,19 @@
 package com.empaques.desa.persistence.entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
-import java.util.Set;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Table(name = "rol")
-@Data
+@Getter
+@Setter
 public class RolEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_rol")
     private Integer idRol;
 
+    @Column(name = "nombre", nullable = false, unique = true)
     private String nombre;
-
-    @ManyToMany(mappedBy = "rol")
-    private Set<UserEntity> usuario;
 }
