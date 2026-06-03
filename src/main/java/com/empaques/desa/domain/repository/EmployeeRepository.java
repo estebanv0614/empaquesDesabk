@@ -10,5 +10,5 @@ public interface EmployeeRepository {
     Optional<EmployeeDto> getById(Integer id);
     EmployeeDto save(EmployeeDto dto);
     Optional<EmployeeDto> update(Integer id, EmployeeDto dto);
-    void delete(Integer id);
+    boolean delete(Integer id);
 }

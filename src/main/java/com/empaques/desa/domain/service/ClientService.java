@@ -23,7 +23,7 @@ public class ClientService {
         return clientRepository.getById(id);
     }
 
-    public ClientDto save(ClientDto dto) {
+    public ClientDto save(ClientDto dto){
         return clientRepository.save(dto);
     }
 
@@ -32,10 +32,6 @@ public class ClientService {
     }
 
     public boolean delete(Integer id) {
-        return clientRepository.getById(id)
-                .map(c -> {
-                    clientRepository.delete(id);
-                    return true;
-                }).orElse(false);
+        return clientRepository.delete(id);
     }
 }

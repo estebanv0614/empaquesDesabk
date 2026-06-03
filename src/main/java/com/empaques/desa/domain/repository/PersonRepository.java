@@ -8,7 +8,8 @@ import java.util.Optional;
 public interface PersonRepository {
     List<PersonDto> getAll();
     Optional<PersonDto> getById(Integer id);
-    PersonDto seva(PersonDto dto);
+    PersonDto save(PersonDto dto);
     Optional<PersonDto> update(Integer id, PersonDto dto);
     boolean delete(Integer id);
+    boolean restore(Integer id);
 }

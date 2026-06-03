@@ -15,23 +15,23 @@ public class EmployeeService {
         this.employeeRepository = employeeRepository;
     }
 
-    public List<EmployeeDto> getAll() {
-        return this.employeeRepository.getAll();
+    public List<EmployeeDto> getAll(){
+        return employeeRepository.getAll();
     }
 
     public Optional<EmployeeDto> getById(Integer id) {
-        return this.employeeRepository.getById(id);
+        return employeeRepository.getById(id);
     }
 
     public EmployeeDto save(EmployeeDto dto){
-        return this.employeeRepository.save(dto);
+        return employeeRepository.save(dto);
     }
 
     public Optional<EmployeeDto> update(Integer id, EmployeeDto dto) {
-        return this.employeeRepository.update(id, dto);
+        return employeeRepository.update(id, dto);
     }
 
-    public void delete(Integer id) {
-        this.employeeRepository.delete(id);
+    public boolean delete(Integer id) {
+        return employeeRepository.delete(id);
     }
 }

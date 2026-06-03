@@ -15,23 +15,28 @@ public class PersonService {
         this.personRepository = personRepository;
     }
 
-    public List<PersonDto> getAll(){
-        return this.personRepository.getAll();
+
+    public List<PersonDto> getAll() {
+        return personRepository.getAll();
     }
 
-    public Optional<PersonDto> getById(Integer id){
-        return this.personRepository.getById(id);
+    public Optional<PersonDto> getById(Integer id) {
+        return personRepository.getById(id);
     }
 
-    public PersonDto seva(PersonDto dto){
-        return personRepository.seva(dto);
+    public PersonDto save(PersonDto dto) {
+        return personRepository.save(dto);
     }
 
-    public Optional<PersonDto> update(Integer id, PersonDto dto){
-        return this.personRepository.update(id, dto);
+    public Optional<PersonDto> update(Integer id, PersonDto dto) {
+        return personRepository.update(id, dto);
     }
 
-    public boolean delete(Integer id){
+    public boolean delete(Integer id) {
         return personRepository.delete(id);
+    }
+
+    public boolean restore(Integer id) {
+        return personRepository.restore(id);
     }
 }

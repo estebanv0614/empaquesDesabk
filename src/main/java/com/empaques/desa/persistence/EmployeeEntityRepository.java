@@ -3,10 +3,9 @@ package com.empaques.desa.persistence;
 import com.empaques.desa.domain.dto.EmployeeDto;
 import com.empaques.desa.domain.repository.EmployeeRepository;
 import com.empaques.desa.persistence.crud.CrudEmployeeEntity;
+import com.empaques.desa.persistence.crud.CrudEstadoEntity;
 import com.empaques.desa.persistence.crud.CrudPersonEntity;
-import com.empaques.desa.persistence.crud.CrudStateEntity;
 import com.empaques.desa.persistence.entity.EmployeeEntity;
-import com.empaques.desa.persistence.entity.StateEntity;
 import com.empaques.desa.persistence.mapper.EmployeeMapper;
 import org.springframework.stereotype.Repository;
 
@@ -17,14 +16,14 @@ import java.util.Optional;
 @Repository
 public class EmployeeEntityRepository implements EmployeeRepository {
     private final CrudEmployeeEntity crudEmployee;
-    private final CrudPersonEntity personCrud;
-    private final CrudStateEntity crudState;
+    private final CrudPersonEntity personEntity;
+    private final CrudEstadoEntity estadoEntity;
     private final EmployeeMapper employeeMapper;
 
-    public EmployeeEntityRepository(CrudEmployeeEntity crudEmployee, CrudPersonEntity personCrud, CrudStateEntity crudState, EmployeeMapper employeeMapper) {
+    public EmployeeEntityRepository(CrudEmployeeEntity crudEmployee, CrudPersonEntity personEntity, CrudEstadoEntity estadoEntity, EmployeeMapper employeeMapper) {
         this.crudEmployee = crudEmployee;
-        this.personCrud = personCrud;
-        this.crudState = crudState;
+        this.personEntity = personEntity;
+        this.estadoEntity = estadoEntity;
         this.employeeMapper = employeeMapper;
     }
 
@@ -42,14 +41,13 @@ public class EmployeeEntityRepository implements EmployeeRepository {
     @Override
     public EmployeeDto save(EmployeeDto dto) {
         EmployeeEntity entity = employeeMapper.toEntity(dto);
-        entity.setFechaIngreso(dto.fechaIngreso());
         entity.setPerson(
-                personCrud.findById(dto.person().id())
-                        .orElseThrow(() -> new RuntimeException("Persona no existe"))
+                personEntity.findById(dto.person().id())
+                        .orElseThrow(() -> new RuntimeException("Person with id " + dto.person().id() + " not foind"))
         );
-        entity.setState(
-                crudState.findById(dto.state().id())
-                        .orElseThrow(() -> new RuntimeException("Estado no existe"))
+        entity.setEstado(
+                estadoEntity.findById(dto.estado().id())
+                        .orElseThrow(() -> new RuntimeException("Estado no esta disponible " + dto.estado().id()))
         );
         return employeeMapper.toDto(crudEmployee.save(entity));
     }
@@ -58,36 +56,26 @@ public class EmployeeEntityRepository implements EmployeeRepository {
     public Optional<EmployeeDto> update(Integer id, EmployeeDto dto) {
         return crudEmployee.findById(id)
                 .map(entity -> {
-                    if (dto.person() != null) {
-                        entity.setPerson(
-                                personCrud.findById(dto.person().id())
-                                        .orElseThrow()
-                        );
-                    }
                     entity.setPosition(dto.position());
                     entity.setSalary(dto.salary());
                     entity.setFechaIngreso(dto.fechaIngreso());
-                    if (dto.state() != null) {
-                        entity.setState(
-                                crudState.findById(dto.state().id())
-                                        .orElseThrow()
-                        );
-                    }
-                    return entity;
-                })
-                .map(crudEmployee::save)
-                .map(employeeMapper::toDto);
+
+                    entity.setEstado(
+                            estadoEntity.findById(dto.estado().id())
+                                    .orElseThrow(() -> new RuntimeException("Estado no esta disponible " + dto.estado().id()))
+                    );
+                    EmployeeEntity updated = crudEmployee.save(entity);
+                    return employeeMapper.toDto(updated);
+                });
     }
 
     @Override
-    public void delete(Integer id) {
-        EmployeeEntity entity = crudEmployee.findById(id)
-                .orElseThrow(() -> new RuntimeException("Employee no existe"));
-        StateEntity inactive = crudState.findByName("INACTIVO")
-                .orElseThrow(() -> new RuntimeException("Estado INACTIVO no existe"));
-        entity.setState(inactive);
-        entity.setDeletedAt(LocalDateTime.now());
-        crudEmployee.save(entity);
-
+    public boolean delete(Integer id) {
+        return crudEmployee.findById(id)
+                .map(entity -> {
+                    entity.setDeletedAt(LocalDateTime.now());
+                    crudEmployee.save(entity);
+                    return true;
+                }).orElse(false);
     }
 }

@@ -1,6 +1,7 @@
 package com.empaques.desa.domain.repository;
 
 import com.empaques.desa.domain.dto.ClientDto;
+import com.empaques.desa.domain.dto.EmployeeDto;
 
 import java.util.List;
 import java.util.Optional;

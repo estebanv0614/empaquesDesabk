@@ -9,5 +9,5 @@ public record EmployeeDto(
         String position,
         BigDecimal salary,
         LocalDate fechaIngreso,
-        StateDto state
+        EstadoDto estado
 ) {}

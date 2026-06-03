@@ -13,9 +13,9 @@ public interface UserMapper {
     @Mapping(source = "idUser", target = "id")
     @Mapping(source = "person", target = "person")
     @Mapping(source = "roles", target = "roles")
-    UserDto toDto(UserEntity user);
+    UserDto toDto(UserEntity entity);
 
-    List<UserDto> toDtoList(Iterable<UserEntity> users);
+    List<UserDto> toDtoList(Iterable<UserEntity> entities);
 
     @InheritInverseConfiguration
     @Mapping(source = "person", target = "person")

@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/person")
+@RequestMapping("/persons")
 public class PersonController {
     private final PersonService personService;
 
@@ -17,26 +17,24 @@ public class PersonController {
     }
 
     @GetMapping
-    public List<PersonDto> getAll(){
-        return this.personService.getAll();
+    public List<PersonDto> getAll() {
+        return personService.getAll();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<PersonDto> getById(@PathVariable Integer id){
+    public ResponseEntity<PersonDto> getById(@PathVariable Integer id) {
         return personService.getById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public ResponseEntity<PersonDto> create(@RequestBody PersonDto dto){
-        return ResponseEntity.ok(personService.seva(dto));
+    public ResponseEntity<PersonDto> create(@RequestBody PersonDto dto) {
+        return ResponseEntity.ok(personService.save(dto));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<PersonDto> update(
-            @PathVariable Integer id,
-            @RequestBody PersonDto dto) {
+    public ResponseEntity<PersonDto> update(@PathVariable Integer id, @RequestBody PersonDto dto) {
         return personService.update(id, dto)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -44,8 +42,20 @@ public class PersonController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Integer id) {
-        this.personService.delete(id);
-        return ResponseEntity.ok().build();
+        boolean deleted = personService.delete(id);
+
+        if (!personService.delete(id)){
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.noContent().build();
     }
 
+
+    @PatchMapping("/{id}/restore")
+    public ResponseEntity<PersonDto> restore(@PathVariable Integer id) {
+        if (personService.restore(id)){
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.noContent().build();
+    }
 }

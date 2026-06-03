@@ -12,8 +12,8 @@ import java.util.Set;
 @Mapper(componentModel = "spring")
 public interface RolMapper {
     @Mapping(source = "idRol", target = "id")
-    @Mapping(source = "nombre", target = "rol")
-    RolDto toDto(RolEntity rol);
+    @Mapping(source = "name", target = "rol")
+    RolDto toDto(RolEntity entity);
 
     List<RolDto> toDtoList(Iterable<RolEntity> roles);
     Set<RolDto> toDtoSet(Set<RolEntity> roles);

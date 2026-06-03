@@ -12,8 +12,8 @@ public class TipoGastoEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_tipo_gasto")
-    private Integer IdExpenseType;
+    private Integer idTipoGasto;
 
-    @Column(name = "nombre")
+    @Column(name = "name", unique = true, nullable = false)
     private String name;
 }
