@@ -43,7 +43,7 @@ public class EmployeeEntityRepository implements EmployeeRepository {
         EmployeeEntity entity = employeeMapper.toEntity(dto);
         entity.setPerson(
                 personEntity.findById(dto.person().id())
-                        .orElseThrow(() -> new RuntimeException("Person with id " + dto.person().id() + " not foind"))
+                        .orElseThrow(() -> new RuntimeException("Person with id " + dto.person().id() + " not found"))
         );
         entity.setEstado(
                 estadoEntity.findById(dto.estado().id())

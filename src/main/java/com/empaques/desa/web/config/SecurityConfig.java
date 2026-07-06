@@ -57,7 +57,46 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/clients/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/clients/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/clients/**").permitAll()
-
+                        // MATERIALS
+                        .requestMatchers(HttpMethod.GET, "/materials/**").hasAnyRole("ADMIN", "USER")
+                        .requestMatchers(HttpMethod.POST, "/materials/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/materials/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/materials/**").permitAll()
+                        //BOLSAS
+                        .requestMatchers(HttpMethod.GET, "/bolsas/**").hasAnyRole("ADMIN", "USER")
+                        .requestMatchers(HttpMethod.POST, "/bolsas/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/bolsas/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/bolsas/**").hasRole("ADMIN")
+                        //RECETE-BOLSA
+                        .requestMatchers(HttpMethod.GET, "/recetas-bolsa/**").hasAnyRole("ADMIN", "USER")
+                        .requestMatchers(HttpMethod.POST, "/recetas-bolsa/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/recetas-bolsa/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/recetas-bolsa/**").hasRole("ADMIN")
+                        //ORDEN-PRODUCCION
+                        .requestMatchers(HttpMethod.GET, "/ordenes-produccion/**").hasAnyRole("ADMIN", "USER")
+                        .requestMatchers(HttpMethod.POST, "/ordenes-produccion/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/ordenes-produccion/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/ordenes-produccion/**").hasRole("ADMIN")
+                        //MOVIMIENTO-INVENTARIO
+                        .requestMatchers(HttpMethod.GET, "/movimientos-inventario/**").hasAnyRole("ADMIN", "USER")
+                        .requestMatchers(HttpMethod.POST, "/movimientos-inventario/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/movimientos-inventario/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/movimientos-inventario/**").hasRole("ADMIN")
+                        //MOVIMIENTO-BOLSA
+                        .requestMatchers(HttpMethod.GET, "/movimientos-bolsa/**").hasAnyRole("ADMIN", "USER")
+                        .requestMatchers(HttpMethod.POST, "/movimientos-bolsa/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/movimientos-bolsa/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/movimientos-bolsa/**").hasRole("ADMIN")
+                        //DOCUMENTO-COMERCIAL
+                        .requestMatchers(HttpMethod.GET, "/documentos-comerciales/**").hasAnyRole("ADMIN", "USER")
+                        .requestMatchers(HttpMethod.POST, "/documentos-comerciales/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/documentos-comerciales/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/documentos-comerciales/**").hasRole("ADMIN")
+                        //DETALLE-DOCUMENTO
+                        .requestMatchers(HttpMethod.GET, "/detalle-documentos/**").hasAnyRole("ADMIN", "USER")
+                        .requestMatchers(HttpMethod.POST, "/detalle-documentos/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/detalle-documentos/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/detalle-documentos/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
