@@ -97,6 +97,11 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/detalle-documentos/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/detalle-documentos/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/detalle-documentos/**").hasRole("ADMIN")
+                        //SOLICITUD-COTIZACION (formulario público)
+                        .requestMatchers(HttpMethod.POST, "/solicitudes-cotizacion").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/solicitudes-cotizacion/**").hasAnyRole("ADMIN", "USER")
+                        .requestMatchers(HttpMethod.PATCH, "/solicitudes-cotizacion/**").hasAnyRole("ADMIN", "USER")
+                        .requestMatchers(HttpMethod.DELETE, "/solicitudes-cotizacion/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);

@@ -5,6 +5,7 @@ import com.empaques.desa.domain.dto.UserDto;
 import com.empaques.desa.domain.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -85,5 +86,13 @@ public class UserController {
                         "Usuario activado correctamente"
                 )
         );
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<UserDto> getCurrentUser(Authentication authentication) {
+        String username = authentication.getName();
+        return userService.getByUsername(username)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 }

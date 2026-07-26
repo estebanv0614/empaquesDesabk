@@ -3,6 +3,8 @@ package com.empaques.desa.persistence;
 import com.empaques.desa.domain.dto.DocumentoComercialDto;
 import com.empaques.desa.domain.repository.DocumentoComercialRepository;
 import com.empaques.desa.persistence.crud.*;
+import com.empaques.desa.persistence.entity.BolsaEntity;
+import com.empaques.desa.persistence.entity.DetalleDocumentoEntity;
 import com.empaques.desa.persistence.entity.DocumentoComercialEntity;
 import com.empaques.desa.persistence.mapper.DocumentoComercialMapper;
 import org.springframework.stereotype.Repository;
@@ -18,15 +20,17 @@ public class DocumentoComercialEntityRepository implements DocumentoComercialRep
     private final CrudUserEntity  crudUser;
     private final CrudMetodoPagoEntity crudMetodoPago;
     private final CrudEstadoEntity crudEstado;
+    private final CrudBolsaEntity crudBolsa;
     private final DocumentoComercialMapper comercialMapper;
 
-    public DocumentoComercialEntityRepository(CrudDocumentoComercialEntity crudDocumentoComercial, CrudTipoDocumentoEntity crudTipoDocumento, CrudClientEntity crudClient, CrudUserEntity crudUser, CrudMetodoPagoEntity crudMetodoPago, CrudEstadoEntity crudEstado, DocumentoComercialMapper comercialMapper) {
+    public DocumentoComercialEntityRepository(CrudDocumentoComercialEntity crudDocumentoComercial, CrudTipoDocumentoEntity crudTipoDocumento, CrudClientEntity crudClient, CrudUserEntity crudUser, CrudMetodoPagoEntity crudMetodoPago, CrudEstadoEntity crudEstado, CrudBolsaEntity crudBolsa, DocumentoComercialMapper comercialMapper) {
         this.crudDocumentoComercial = crudDocumentoComercial;
         this.crudTipoDocumento = crudTipoDocumento;
         this.crudClient = crudClient;
         this.crudUser = crudUser;
         this.crudMetodoPago = crudMetodoPago;
         this.crudEstado = crudEstado;
+        this.crudBolsa = crudBolsa;
         this.comercialMapper = comercialMapper;
     }
 
@@ -67,6 +71,19 @@ public class DocumentoComercialEntityRepository implements DocumentoComercialRep
                 crudEstado.findById(dto.estado().id())
                         .orElseThrow(() -> new RuntimeException("Estado de pago no encontrado"))
         );
+        if (entity.getDetalles() != null) {
+            for (int i = 0; i < entity.getDetalles().size(); i++) {
+                DetalleDocumentoEntity detalleEntity = entity.getDetalles().get(i);
+                Integer idBolsa = dto.detalles().get(i).bolsa().id();
+                if (idBolsa == null) {
+                    throw new RuntimeException("El detalle #" + (i + 1) + " no tiene una bolsa seleccionada ");
+                }
+                BolsaEntity bolsaReal = crudBolsa.findById(idBolsa)
+                        .orElseThrow(() -> new RuntimeException("Bolsa no encontrado " + idBolsa));
+                detalleEntity.setBolsa(bolsaReal);
+                detalleEntity.setDocumentoComercial(entity);
+            }
+        }
         return comercialMapper.toDto(crudDocumentoComercial.save(entity));
     }
 

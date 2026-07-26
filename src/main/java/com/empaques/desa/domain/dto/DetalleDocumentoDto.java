@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 
 public record DetalleDocumentoDto(
         Integer id,
-        DocumentoComercialDto documentoComercial,
+        Integer idDocumento,
         BolsaDto bolsa,
         BigDecimal cantidad,
         BigDecimal precioUnitarioSnapshot,

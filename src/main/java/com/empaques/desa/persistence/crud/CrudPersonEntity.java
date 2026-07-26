@@ -11,4 +11,5 @@ public interface CrudPersonEntity extends CrudRepository<PersonEntity, Integer> 
 
     @Query("SELECT p FROM PersonEntity p WHERE p.idPerson = :id")
     Optional<PersonEntity> findByIdIncludingDeleted(Integer id);
+    Optional<PersonEntity> findFirstByEmailOrPhone(String email, String phone);
 }

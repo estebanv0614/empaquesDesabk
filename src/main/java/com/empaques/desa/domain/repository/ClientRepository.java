@@ -12,4 +12,5 @@ public interface ClientRepository {
     ClientDto save(ClientDto dto);
     Optional<ClientDto> update(Integer id, ClientDto dto);
     boolean delete(Integer id);
+    Optional<ClientDto> getByPersonId(Integer idPerson);
 }

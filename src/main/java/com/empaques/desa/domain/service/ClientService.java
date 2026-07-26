@@ -34,4 +34,8 @@ public class ClientService {
     public boolean delete(Integer id) {
         return clientRepository.delete(id);
     }
+
+    public Optional<ClientDto> getByPersonId(Integer idPerson) {
+        return clientRepository.getByPersonId(idPerson);
+    }
 }

@@ -84,4 +84,10 @@ public class PersonEntityRepository implements PersonRepository {
                     return true;
                 }).orElse(false);
     }
+
+    @Override
+    public Optional<PersonDto> search(String email, String phone) {
+        return crudPerson.findFirstByEmailOrPhone(email, phone)
+                .map(personMapper::toDto);
+    }
 }

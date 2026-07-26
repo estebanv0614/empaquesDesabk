@@ -39,4 +39,8 @@ public class PersonService {
     public boolean restore(Integer id) {
         return personRepository.restore(id);
     }
+
+    public Optional<PersonDto> search(String email, String phone) {
+        return personRepository.search(email, phone);
+    }
 }

@@ -76,4 +76,7 @@ public class UserService implements UserDetailsService {
                         .toArray(String[]::new))
                 .build();
     }
+    public Optional<UserDto> getByUsername(String username) {
+        return userRepository.getByUsername(username);
+    }
 }

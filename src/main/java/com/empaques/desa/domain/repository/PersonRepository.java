@@ -12,4 +12,5 @@ public interface PersonRepository {
     Optional<PersonDto> update(Integer id, PersonDto dto);
     boolean delete(Integer id);
     boolean restore(Integer id);
+    Optional<PersonDto> search(String email, String phone);
 }

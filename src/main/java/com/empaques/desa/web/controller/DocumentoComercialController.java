@@ -1,19 +1,26 @@
 package com.empaques.desa.web.controller;
 
 import com.empaques.desa.domain.dto.DocumentoComercialDto;
+import com.empaques.desa.domain.service.CotizacionPdfService;
 import com.empaques.desa.domain.service.DocumentoComercialService;
+import com.lowagie.text.DocumentException;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
 @RequestMapping("documentos-comerciales")
 public class DocumentoComercialController {
     private final DocumentoComercialService documentoComercial;
+    private final CotizacionPdfService  cotizacionPdf;
 
-    public DocumentoComercialController(DocumentoComercialService documentoComercial) {
+    public DocumentoComercialController(DocumentoComercialService documentoComercial, CotizacionPdfService cotizacionPdf) {
         this.documentoComercial = documentoComercial;
+        this.cotizacionPdf = cotizacionPdf;
     }
 
     @GetMapping
@@ -47,5 +54,17 @@ public class DocumentoComercialController {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{id}/pdf")
+    public ResponseEntity<byte[]> generarPdf(@PathVariable Integer id) throws IOException, DocumentException {
+        DocumentoComercialDto documento = documentoComercial.getById(id)
+                .orElseThrow(() -> new RuntimeException("Documento comercial no encontrado"));
+
+        byte[] pdfBytes = cotizacionPdf.generarCotizacion(documento);
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_PDF)
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=cotizacion-" + documento.numeroFactura() + " .pdf")
+                .body(pdfBytes);
     }
 }

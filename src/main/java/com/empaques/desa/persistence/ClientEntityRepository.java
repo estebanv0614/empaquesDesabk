@@ -77,4 +77,10 @@ public class ClientEntityRepository implements ClientRepository {
                     return true;
                 }).orElse(false);
     }
+
+    @Override
+    public Optional<ClientDto> getByPersonId(Integer idPerson) {
+        return crudClient.findByPerson_IdPerson(idPerson)
+                .map(clientMapper::toDto);
+    }
 }

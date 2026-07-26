@@ -44,7 +44,7 @@ public class DetalleDocumentoEntityRepository implements DetalleDocumentoReposit
         DetalleDocumentoEntity entity = detalleDocumentoMapper.toEntity(dto);
 
         entity.setDocumentoComercial(
-                crudDocumentoComercial.findById(dto.documentoComercial().id())
+                crudDocumentoComercial.findById(dto.idDocumento())
                         .orElseThrow(() -> new RuntimeException("Documento no encontrado"))
         );
 

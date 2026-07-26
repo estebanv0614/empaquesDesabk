@@ -11,7 +11,7 @@ import java.util.List;
 @Mapper(componentModel = "spring", uses = {DocumentoComercialMapper.class, BolsaMapper.class})
 public interface DetalleDocumentoMapper {
     @Mapping(source = "idDetalle", target = "id")
-    @Mapping(source = "documentoComercial", target = "documentoComercial")
+    @Mapping(source = "documentoComercial.idDocumento", target = "idDocumento")
     @Mapping(source = "bolsa", target = "bolsa")
     DetalleDocumentoDto toDto(DetalleDocumentoEntity entity);
 

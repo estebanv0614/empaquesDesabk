@@ -48,4 +48,11 @@ public class ClientController {
         }
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/by-person/{idPerson}")
+    public ResponseEntity<ClientDto> getByPersonId(@PathVariable Integer idPerson) {
+        return clientService.getByPersonId(idPerson)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
 }

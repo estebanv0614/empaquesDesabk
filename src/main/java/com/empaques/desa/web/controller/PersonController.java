@@ -58,4 +58,13 @@ public class PersonController {
         }
         return ResponseEntity.noContent().build();
     }
+    @GetMapping("/search")
+    public ResponseEntity<PersonDto> search(
+            @RequestParam(required = false) String email,
+            @RequestParam(required = false) String phone
+    ) {
+        return personService.search(email, phone)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
 }
