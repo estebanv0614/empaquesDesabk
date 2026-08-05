@@ -43,7 +43,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/persons/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/persons/**").hasRole("ADMIN")
                         // USERS
-                        .requestMatchers(HttpMethod.GET, "/users/**").hasAnyRole("ADMIN", "USER")
+                        .requestMatchers(HttpMethod.GET, "/users/**").hasAnyRole("ADMIN", "USER", "CLIENTE")
                         .requestMatchers(HttpMethod.POST, "/users/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/users/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/users/**").hasRole("ADMIN")
@@ -102,6 +102,13 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/solicitudes-cotizacion/**").hasAnyRole("ADMIN", "USER")
                         .requestMatchers(HttpMethod.PATCH, "/solicitudes-cotizacion/**").hasAnyRole("ADMIN", "USER")
                         .requestMatchers(HttpMethod.DELETE, "/solicitudes-cotizacion/**").hasRole("ADMIN")
+                        //PEDIDO
+                        .requestMatchers(HttpMethod.GET, "/pedidos/mis-pedidos").hasAnyRole("ADMIN", "USER", "CLIENTE")
+                        .requestMatchers(HttpMethod.GET, "/pedidos/**").hasAnyRole("ADMIN", "USER")
+                        .requestMatchers(HttpMethod.POST, "/pedidos/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/pedidos/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PATCH, "/pedidos/**").hasAnyRole("ADMIN", "USER")
+                        .requestMatchers(HttpMethod.DELETE, "/pedidos/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
