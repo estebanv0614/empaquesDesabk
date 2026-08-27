@@ -1,6 +1,8 @@
 package com.empaques.desa.domain.service;
 
+import com.empaques.desa.domain.dto.EstadisticaPeriodoDto;
 import com.empaques.desa.domain.dto.PedidoDto;
+import com.empaques.desa.domain.dto.ResumenPedidosDto;
 import com.empaques.desa.domain.repository.PedidoRepository;
 import org.springframework.stereotype.Service;
 
@@ -41,5 +43,18 @@ public class PedidoService {
 
     public List<PedidoDto> getByClientId(Integer idClient) {
         return pedidoRepository.getByClientId(idClient);
+    }
+
+
+    public ResumenPedidosDto getResumen() {
+        return pedidoRepository.getResumen();
+    }
+
+    public List<EstadisticaPeriodoDto> getEstadisticasPorMes() {
+        return pedidoRepository.getEstadisticasPorMes();
+    }
+
+    public List<EstadisticaPeriodoDto> getEstadisticasPorDia() {
+        return pedidoRepository.getEstadisticasPorDia();
     }
 }

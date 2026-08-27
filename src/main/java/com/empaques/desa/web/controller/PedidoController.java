@@ -1,8 +1,6 @@
 package com.empaques.desa.web.controller;
 
-import com.empaques.desa.domain.dto.ClientDto;
-import com.empaques.desa.domain.dto.PedidoDto;
-import com.empaques.desa.domain.dto.UserDto;
+import com.empaques.desa.domain.dto.*;
 import com.empaques.desa.domain.service.ClientService;
 import com.empaques.desa.domain.service.PedidoService;
 import com.empaques.desa.domain.service.UserService;
@@ -78,5 +76,20 @@ public class PedidoController {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/estadisticas/resumen")
+    public ResponseEntity<ResumenPedidosDto> getResumen() {
+        return ResponseEntity.ok(pedidoService.getResumen());
+    }
+
+    @GetMapping("/estadisticas/por-mes")
+    public List<EstadisticaPeriodoDto> getEstadisticasPorMes() {
+        return pedidoService.getEstadisticasPorMes();
+    }
+
+    @GetMapping("/estadisticas/por-dia")
+    public  List<EstadisticaPeriodoDto> getEstadisticasPorDia() {
+        return pedidoService.getEstadisticasPorDia();
     }
 }

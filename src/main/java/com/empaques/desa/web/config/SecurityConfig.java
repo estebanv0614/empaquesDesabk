@@ -103,6 +103,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PATCH, "/solicitudes-cotizacion/**").hasAnyRole("ADMIN", "USER")
                         .requestMatchers(HttpMethod.DELETE, "/solicitudes-cotizacion/**").hasRole("ADMIN")
                         //PEDIDO
+                        .requestMatchers(HttpMethod.GET, "/pedidos/estadisticas/**").hasAnyRole("ADMIN", "USER")
                         .requestMatchers(HttpMethod.GET, "/pedidos/mis-pedidos").hasAnyRole("ADMIN", "USER", "CLIENTE")
                         .requestMatchers(HttpMethod.GET, "/pedidos/**").hasAnyRole("ADMIN", "USER")
                         .requestMatchers(HttpMethod.POST, "/pedidos/**").hasRole("ADMIN")

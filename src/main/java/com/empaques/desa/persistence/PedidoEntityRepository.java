@@ -1,6 +1,8 @@
 package com.empaques.desa.persistence;
 
+import com.empaques.desa.domain.dto.EstadisticaPeriodoDto;
 import com.empaques.desa.domain.dto.PedidoDto;
+import com.empaques.desa.domain.dto.ResumenPedidosDto;
 import com.empaques.desa.domain.repository.PedidoRepository;
 import com.empaques.desa.persistence.crud.*;
 import com.empaques.desa.persistence.entity.BolsaEntity;
@@ -143,5 +145,29 @@ public class PedidoEntityRepository implements PedidoRepository {
     @Override
     public List<PedidoDto> getByClientId(Integer idClient) {
         return pedidoMapper.toDtoList(crudPedido.findByClient_IdClient(idClient));
+    }
+
+    @Override
+    public ResumenPedidosDto getResumen() {
+        return new ResumenPedidosDto(
+                crudPedido.countHoy(),
+                crudPedido.countEstaSemana(),
+                crudPedido.countEsteMes(),
+                crudPedido.countEsteAnio()
+        );
+    }
+
+    @Override
+    public List<EstadisticaPeriodoDto> getEstadisticasPorMes() {
+        return crudPedido.countPorMes().stream()
+                .map(row -> new EstadisticaPeriodoDto(row[0].toString(), ((Number) row[1]).longValue()))
+                .toList();
+    }
+
+    @Override
+    public List<EstadisticaPeriodoDto> getEstadisticasPorDia() {
+        return crudPedido.countPorDia().stream()
+                .map(row -> new EstadisticaPeriodoDto(row[0].toString(), ((Number) row[1]).longValue()))
+                .toList();
     }
 }

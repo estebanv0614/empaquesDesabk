@@ -1,6 +1,8 @@
 package com.empaques.desa.domain.repository;
 
+import com.empaques.desa.domain.dto.EstadisticaPeriodoDto;
 import com.empaques.desa.domain.dto.PedidoDto;
+import com.empaques.desa.domain.dto.ResumenPedidosDto;
 
 import java.util.List;
 import java.util.Optional;
@@ -13,6 +15,11 @@ public interface PedidoRepository {
     Optional<PedidoDto> updateEstado(Integer id, Integer idEstado);
     boolean delete(Integer id);
     List<PedidoDto> getByClientId(Integer idClient);
+
+
+    ResumenPedidosDto getResumen();
+    List<EstadisticaPeriodoDto> getEstadisticasPorMes();
+    List<EstadisticaPeriodoDto> getEstadisticasPorDia();
 
 
 }
