@@ -13,6 +13,7 @@ public interface SolicitudCotizacionMapper {
     @Mapping(source = "idSolicitud", target = "id")
     @Mapping(source = "estado", target = "estado")
     @Mapping(source = "detalles", target = "detalles")
+    @Mapping(source = "documentoComercial.idDocumento", target = "documentoComercialId")
     SolicitudCotizacionDto toDto(SolicitudCotizacionEntity entity);
 
     List<SolicitudCotizacionDto> toDtoList(Iterable<SolicitudCotizacionEntity> entities);

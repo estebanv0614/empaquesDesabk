@@ -37,6 +37,10 @@ public class PedidoService {
         return pedidoRepository.updateEstado(id, idEstado);
     }
 
+    public Optional<PedidoDto> marcarComoPagado(Integer id) {
+        return pedidoRepository.marcarComoPagado(id);
+    }
+
     public boolean delete(Integer id) {
         return pedidoRepository.delete(id);
     }

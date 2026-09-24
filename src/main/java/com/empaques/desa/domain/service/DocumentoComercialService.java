@@ -10,9 +10,11 @@ import java.util.Optional;
 @Service
 public class DocumentoComercialService {
     private final DocumentoComercialRepository documentoComercial;
+    private final EmailNotificacionService emailNotificacionService;
 
-    public DocumentoComercialService(DocumentoComercialRepository documentoComercial) {
+    public DocumentoComercialService(DocumentoComercialRepository documentoComercial, EmailNotificacionService emailNotificacionService) {
         this.documentoComercial = documentoComercial;
+        this.emailNotificacionService = emailNotificacionService;
     }
 
     public List<DocumentoComercialDto> getAll() {
@@ -24,8 +26,14 @@ public class DocumentoComercialService {
     }
 
     public DocumentoComercialDto save(DocumentoComercialDto dto) {
-        return documentoComercial.save(dto);
+        DocumentoComercialDto guardado = documentoComercial.save(dto);
+        emailNotificacionService.enviarCotizacionPdf(guardado);
+        return guardado;
     }
+
+    /*public DocumentoComercialDto save(DocumentoComercialDto dto) {
+        return documentoComercial.save(dto);
+    }*/
 
     public Optional<DocumentoComercialDto> update(Integer id, DocumentoComercialDto dto) {
         return documentoComercial.update(id, dto);

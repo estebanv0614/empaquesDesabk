@@ -1,5 +1,6 @@
 package com.empaques.desa.domain.repository;
 
+import com.empaques.desa.domain.dto.DocumentoComercialDto;
 import com.empaques.desa.domain.dto.SolicitudCotizacionDto;
 import com.empaques.desa.domain.dto.SolicitudCotizacionRequestDto;
 
@@ -12,4 +13,5 @@ public interface SolicitudCotizacionRepository {
     SolicitudCotizacionDto save(SolicitudCotizacionRequestDto dto);
     Optional<SolicitudCotizacionDto> update(Integer id, Integer idEstado);
     boolean delete(Integer id);
+    DocumentoComercialDto convertirACotizacion(Integer idSolicitud, DocumentoComercialDto pdfDto);
 }

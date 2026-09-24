@@ -42,6 +42,10 @@ public class SolicitudCotizacionEntity {
     @OneToMany(mappedBy = "solicitud", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<DetalleSolicitudEntity> detalles;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_documento_comercial")
+    private DocumentoComercialEntity documentoComercial;
+
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 

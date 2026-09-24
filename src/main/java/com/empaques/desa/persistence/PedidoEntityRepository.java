@@ -133,6 +133,17 @@ public class PedidoEntityRepository implements PedidoRepository {
     }
 
     @Override
+    public Optional<PedidoDto> marcarComoPagado(Integer id) {
+        return crudPedido.findById(id)
+                .map(entity -> {
+                    entity.setPagado(true);
+                    entity.setFechaPago(LocalDateTime.now());
+                    PedidoEntity actualizado = crudPedido.save(entity);
+                    return pedidoMapper.toDto(actualizado);
+                });
+    }
+
+    @Override
     public boolean delete(Integer id) {
         return crudPedido.findById(id)
                 .map(entity -> {

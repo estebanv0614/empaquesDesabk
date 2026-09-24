@@ -1,7 +1,9 @@
 package com.empaques.desa.web.controller;
 
+import com.empaques.desa.domain.dto.DocumentoComercialDto;
 import com.empaques.desa.domain.dto.SolicitudCotizacionDto;
 import com.empaques.desa.domain.dto.SolicitudCotizacionRequestDto;
+import com.empaques.desa.domain.exception.SolicitudYaConvertidaException;
 import com.empaques.desa.domain.service.SolicitudCotizacionService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -51,5 +53,18 @@ public class SolicitudCotizacionController {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{id}/convertir")
+    public ResponseEntity<?> convertir(@PathVariable Integer id, @RequestBody DocumentoComercialDto dto) {
+        try {
+            DocumentoComercialDto resultado = solicitudCotizacion.convertirACotizacion(id, dto);
+            return ResponseEntity.ok(resultado);
+        } catch (SolicitudYaConvertidaException e) {
+            return ResponseEntity.status(409).body(Map.of(
+                    "error", e.getMessage(),
+                    "documentoComercialId", e.getDocumetoComercialId()
+            ));
+        }
     }
 }

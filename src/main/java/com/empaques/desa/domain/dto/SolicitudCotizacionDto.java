@@ -13,6 +13,7 @@ public record SolicitudCotizacionDto(
         LocalDateTime fechaSolicitud,
         String observacion,
         EstadoDto estado,
-        List<DetalleSolicitudDto> detalles
+        List<DetalleSolicitudDto> detalles,
+        Integer documentoComercialId
 ) {
 }

@@ -1,11 +1,16 @@
 package com.empaques.desa.persistence;
 
+import com.empaques.desa.domain.dto.DocumentoComercialDto;
 import com.empaques.desa.domain.dto.SolicitudCotizacionDto;
 import com.empaques.desa.domain.dto.SolicitudCotizacionRequestDto;
+import com.empaques.desa.domain.exception.SolicitudYaConvertidaException;
+import com.empaques.desa.domain.repository.DocumentoComercialRepository;
 import com.empaques.desa.domain.repository.SolicitudCotizacionRepository;
+import com.empaques.desa.persistence.crud.CrudDocumentoComercialEntity;
 import com.empaques.desa.persistence.crud.CrudEstadoEntity;
 import com.empaques.desa.persistence.crud.CrudSolicitudCotizacionEntity;
 import com.empaques.desa.persistence.entity.DetalleSolicitudEntity;
+import com.empaques.desa.persistence.entity.DocumentoComercialEntity;
 import com.empaques.desa.persistence.entity.SolicitudCotizacionEntity;
 import com.empaques.desa.persistence.mapper.SolicitudCotizacionMapper;
 import org.springframework.stereotype.Repository;
@@ -21,11 +26,15 @@ public class SolicitudCotizacionEntityRepository implements SolicitudCotizacionR
     private final CrudSolicitudCotizacionEntity solicitud;
     private final CrudEstadoEntity  estado;
     private final SolicitudCotizacionMapper  solicitudMapper;
+    private final CrudDocumentoComercialEntity documentoComercial;
+    private final DocumentoComercialRepository documentoComercialRepository;
 
-    public SolicitudCotizacionEntityRepository(CrudSolicitudCotizacionEntity solicitud, CrudEstadoEntity estado, SolicitudCotizacionMapper solicitudMapper) {
+    public SolicitudCotizacionEntityRepository(CrudSolicitudCotizacionEntity solicitud, CrudEstadoEntity estado, SolicitudCotizacionMapper solicitudMapper, CrudDocumentoComercialEntity documentoComercial, DocumentoComercialRepository documentoComercialRepository) {
         this.solicitud = solicitud;
         this.estado = estado;
         this.solicitudMapper = solicitudMapper;
+        this.documentoComercial = documentoComercial;
+        this.documentoComercialRepository = documentoComercialRepository;
     }
 
     @Override
@@ -88,5 +97,23 @@ public class SolicitudCotizacionEntityRepository implements SolicitudCotizacionR
                     solicitud.save(entity);
                     return true;
                 }).orElse(false);
+    }
+
+    @Override
+    public DocumentoComercialDto convertirACotizacion(Integer idSolicitud, DocumentoComercialDto pdfDto) {
+        SolicitudCotizacionEntity entity = solicitud.findById(idSolicitud)
+                .orElseThrow(() -> new RuntimeException("Solicitud no encontrada"));
+
+        if (entity.getDocumentoComercial() != null) {
+            throw new SolicitudYaConvertidaException(entity.getDocumentoComercial().getIdDocumento());
+        }
+        DocumentoComercialDto documentoCreado = documentoComercialRepository.save(pdfDto);
+
+        DocumentoComercialEntity documentoEntity = documentoComercial.findById(documentoCreado.id())
+                .orElseThrow(() -> new RuntimeException("Error al recuperar el documento recien creado"));
+
+        entity.setDocumentoComercial(documentoEntity);
+        solicitud.save(entity);
+        return documentoCreado;
     }
 }

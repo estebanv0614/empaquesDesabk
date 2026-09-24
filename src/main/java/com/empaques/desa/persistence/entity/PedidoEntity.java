@@ -50,6 +50,12 @@ public class PedidoEntity {
 
     private  BigDecimal total;
 
+    @Column(name = "pagado")
+    private Boolean pagado = false;
+
+    @Column(name = "fecha_pago")
+    private LocalDateTime fechaPago;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_metodo_pago")
     private MetodoPagoEntity metodoPago;

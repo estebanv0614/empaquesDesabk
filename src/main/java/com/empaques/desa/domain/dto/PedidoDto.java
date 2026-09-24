@@ -18,6 +18,8 @@ public record PedidoDto(
         BigDecimal total,
         MetodoPagoDto metodoPago,
         String observacion,
+        Boolean pagado,
+        LocalDateTime fechaPago,
         List<DetallePedidoDto> detalles
 ) {
 }

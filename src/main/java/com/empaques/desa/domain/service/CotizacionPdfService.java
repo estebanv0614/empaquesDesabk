@@ -265,12 +265,10 @@ public class CotizacionPdfService {
         firmaTable.setWidthPercentage(100);
         firmaTable.setWidths(new float[]{55, 30, 15});
 
-        // Columna vacía (para empujar el contenido a la derecha)
         PdfPCell vacia = new PdfPCell(new Phrase(""));
         vacia.setBorder(Rectangle.NO_BORDER);
         firmaTable.addCell(vacia);
 
-        // Columna con los datos de firma/contacto
         PdfPTable datosFirma = new PdfPTable(1);
         agregarLineaFirma(datosFirma, "JAVIER SALDAÑA", FONT_LABEL);
         agregarLineaFirma(datosFirma, "EMPAQUES DESA", FONT_NORMAL);

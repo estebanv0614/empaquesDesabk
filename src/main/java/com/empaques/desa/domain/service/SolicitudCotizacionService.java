@@ -1,5 +1,6 @@
 package com.empaques.desa.domain.service;
 
+import com.empaques.desa.domain.dto.DocumentoComercialDto;
 import com.empaques.desa.domain.dto.SolicitudCotizacionDto;
 import com.empaques.desa.domain.dto.SolicitudCotizacionRequestDto;
 import com.empaques.desa.domain.repository.SolicitudCotizacionRepository;
@@ -38,5 +39,11 @@ public class SolicitudCotizacionService {
 
     public boolean delete(Integer id) {
         return solicitudCotizacion.delete(id);
+    }
+
+    public DocumentoComercialDto convertirACotizacion(Integer idSolicitud, DocumentoComercialDto pdfDto){
+        DocumentoComercialDto resultado = solicitudCotizacion.convertirACotizacion(idSolicitud, pdfDto);
+        emailNotificacion.enviarCotizacionPdf(resultado);
+        return resultado;
     }
 }

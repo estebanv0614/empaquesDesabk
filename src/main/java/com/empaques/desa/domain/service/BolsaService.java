@@ -34,4 +34,7 @@ public class BolsaService {
     public boolean delete(Integer id) {
         return bolsaRepository.delete(id);
     }
+    public List<BolsaDto> getPublicoCatalogo() {
+        return bolsaRepository.getPublicoCatalogo();
+    }
 }

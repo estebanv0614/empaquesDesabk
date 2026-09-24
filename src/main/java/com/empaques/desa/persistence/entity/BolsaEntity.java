@@ -26,6 +26,11 @@ public class BolsaEntity {
     @Column(name = "id_bolsa")
     private Integer idBolsa;
 
+    private String name;
+
+    @Column(columnDefinition = "TEXT")
+    private String description;
+
     private String tipo;
 
     @Column(name = "ancho_cm")
@@ -41,6 +46,9 @@ public class BolsaEntity {
 
     @Column(name = "stock_actual")
     private BigDecimal stockActual = BigDecimal.ZERO;
+
+    @Column(name = "imagen_url")
+    private String imagenUrl;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_estado")

@@ -38,6 +38,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/error").permitAll()
+                        .requestMatchers("/uploads/**").permitAll()
                         // PERSONS
                         .requestMatchers(HttpMethod.GET, "/persons/**").authenticated()
                         .requestMatchers(HttpMethod.POST, "/persons/**").hasRole("ADMIN")
@@ -63,6 +64,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PUT, "/materials/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/materials/**").permitAll()
                         //BOLSAS
+                        .requestMatchers(HttpMethod.GET, "/bolsas/catalogo").permitAll()
                         .requestMatchers(HttpMethod.GET, "/bolsas/**").hasAnyRole("ADMIN", "USER")
                         .requestMatchers(HttpMethod.POST, "/bolsas/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/bolsas/**").hasRole("ADMIN")
@@ -99,6 +101,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.DELETE, "/detalle-documentos/**").hasRole("ADMIN")
                         //SOLICITUD-COTIZACION (formulario público)
                         .requestMatchers(HttpMethod.POST, "/solicitudes-cotizacion").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/solicitudes-cotizacion/*/convertir").hasAnyRole("ADMIN", "USER")
                         .requestMatchers(HttpMethod.GET, "/solicitudes-cotizacion/**").hasAnyRole("ADMIN", "USER")
                         .requestMatchers(HttpMethod.PATCH, "/solicitudes-cotizacion/**").hasAnyRole("ADMIN", "USER")
                         .requestMatchers(HttpMethod.DELETE, "/solicitudes-cotizacion/**").hasRole("ADMIN")
@@ -109,7 +112,9 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/pedidos/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/pedidos/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PATCH, "/pedidos/**").hasAnyRole("ADMIN", "USER")
+                        .requestMatchers(HttpMethod.PATCH, "/pedidos/*/pagar").hasAnyRole("ADMIN", "USER")
                         .requestMatchers(HttpMethod.DELETE, "/pedidos/**").hasRole("ADMIN")
+
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);

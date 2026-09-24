@@ -69,6 +69,13 @@ public class PedidoController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @PatchMapping("/{id}/pagar")
+    public ResponseEntity<PedidoDto> marcarComoPagado(@PathVariable Integer id) {
+        return pedidoService.marcarComoPagado(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Integer id) {
         boolean deleted = pedidoService.delete(id);

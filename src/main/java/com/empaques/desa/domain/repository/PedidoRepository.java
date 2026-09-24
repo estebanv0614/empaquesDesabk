@@ -13,6 +13,7 @@ public interface PedidoRepository {
     PedidoDto save(PedidoDto dto);
     Optional<PedidoDto> update(Integer id, PedidoDto dto);
     Optional<PedidoDto> updateEstado(Integer id, Integer idEstado);
+    Optional<PedidoDto> marcarComoPagado(Integer id);
     boolean delete(Integer id);
     List<PedidoDto> getByClientId(Integer idClient);
 

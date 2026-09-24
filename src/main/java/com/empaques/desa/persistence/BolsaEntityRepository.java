@@ -12,6 +12,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.StreamSupport;
 
 @Repository
 public class BolsaEntityRepository implements BolsaRepository {
@@ -53,6 +54,8 @@ public class BolsaEntityRepository implements BolsaRepository {
     public Optional<BolsaDto> update(Integer id, BolsaDto dto) {
         return crudBolsa.findById(id)
                 .map(entity -> {
+                    entity.setName(dto.name());
+                    entity.setDescription(dto.description());
                     entity.setTipo(dto.tipo());
                     entity.setAnchoCm(dto.anchoCm());
                     entity.setLargoCm(dto.largoCm());
@@ -60,6 +63,9 @@ public class BolsaEntityRepository implements BolsaRepository {
                     entity.setPrecioBase(dto.precioBase());
                     if (dto.stockActual() != null) {
                         entity.setStockActual(dto.stockActual());
+                    }
+                    if (dto.imagenUrl() != null) {
+                        entity.setImagenUrl(dto.imagenUrl());
                     }
                     entity.setEstado(
                             crudEstado.findById(dto.estado().id())
@@ -78,5 +84,10 @@ public class BolsaEntityRepository implements BolsaRepository {
                     crudBolsa.save(entity);
                     return true;
                 }).orElse(false);
+    }
+
+    @Override
+    public List<BolsaDto> getPublicoCatalogo() {
+        return bolsaMapper.toDtoList(crudBolsa.findByEstado_NameIgnoreCase("ACTIVO"));
     }
 }
