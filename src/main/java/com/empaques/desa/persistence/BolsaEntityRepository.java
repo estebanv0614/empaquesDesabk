@@ -40,9 +40,6 @@ public class BolsaEntityRepository implements BolsaRepository {
     @Override
     public BolsaDto save(BolsaDto dto) {
         BolsaEntity entity = bolsaMapper.toEntity(dto);
-        if (entity.getStockActual() == null) {
-            entity.setStockActual(BigDecimal.ZERO);
-        }
         entity.setEstado(
                 crudEstado.findById(dto.estado().id())
                         .orElseThrow(() -> new RuntimeException("Estado no esta disponible " + dto.estado().id()))
@@ -61,9 +58,6 @@ public class BolsaEntityRepository implements BolsaRepository {
                     entity.setLargoCm(dto.largoCm());
                     entity.setCalibre(dto.calibre());
                     entity.setPrecioBase(dto.precioBase());
-                    if (dto.stockActual() != null) {
-                        entity.setStockActual(dto.stockActual());
-                    }
                     if (dto.imagenUrl() != null) {
                         entity.setImagenUrl(dto.imagenUrl());
                     }

@@ -2,12 +2,19 @@ package com.empaques.desa.web.controller;
 
 import com.empaques.desa.domain.dto.*;
 import com.empaques.desa.domain.service.ClientService;
+import com.empaques.desa.domain.service.ExcelPedidoService;
 import com.empaques.desa.domain.service.PedidoService;
 import com.empaques.desa.domain.service.UserService;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -17,11 +24,13 @@ public class PedidoController {
     private final PedidoService pedidoService;
     private final UserService userService;
     private final ClientService clientService;
+    private final ExcelPedidoService excelPedido;
 
-    public PedidoController(PedidoService pedidoService, UserService userService, ClientService clientService) {
+    public PedidoController(PedidoService pedidoService, UserService userService, ClientService clientService, ExcelPedidoService excelPedido) {
         this.pedidoService = pedidoService;
         this.userService = userService;
         this.clientService = clientService;
+        this.excelPedido = excelPedido;
     }
 
     @GetMapping
@@ -98,5 +107,42 @@ public class PedidoController {
     @GetMapping("/estadisticas/por-dia")
     public  List<EstadisticaPeriodoDto> getEstadisticasPorDia() {
         return pedidoService.getEstadisticasPorDia();
+    }
+
+    @GetMapping("/export")
+    public ResponseEntity<byte[]> exportar(
+            @RequestParam String periodo,
+            @RequestParam(required = false) String fecha
+    ) throws IOException {
+
+        LocalDate base = fecha != null ? LocalDate.parse(fecha) : LocalDate.now();
+        LocalDateTime desde;
+        LocalDateTime hasta;
+
+        switch (periodo) {
+            case "semana" -> {
+                desde = base.with(DayOfWeek.MONDAY).atStartOfDay();
+                hasta = base.with(DayOfWeek.SUNDAY).atTime(23, 59, 59);
+            }
+            case "mes" -> {
+                desde = base.withDayOfMonth(1).atStartOfDay();
+                hasta = base.withDayOfMonth(base.lengthOfMonth()).atTime(23, 59, 59);
+            }
+            case "anio" -> {
+                desde = base.withDayOfYear(1).atStartOfDay();
+                hasta = base.withDayOfYear(base.lengthOfYear()).atTime(23, 59, 59);
+            }
+            default -> throw new IllegalArgumentException("Período inválido: " + periodo);
+        }
+
+        List<PedidoDto> pedidos = pedidoService.getByRangoFechas(desde, hasta);
+        byte[] excelBytes = excelPedido.generarExcel(pedidos);
+
+        String nombreArchivo = "pedidos_" + periodo + "_" + base + ".xlsx";
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + nombreArchivo)
+                .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+                .body(excelBytes);
     }
 }

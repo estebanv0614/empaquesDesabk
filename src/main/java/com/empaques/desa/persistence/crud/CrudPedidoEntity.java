@@ -4,6 +4,7 @@ import com.empaques.desa.persistence.entity.PedidoEntity;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface CrudPedidoEntity extends CrudRepository<PedidoEntity, Integer> {
@@ -33,4 +34,5 @@ public interface CrudPedidoEntity extends CrudRepository<PedidoEntity, Integer> 
             "GROUP BY DATE(fecha_pedido) " +
             "ORDER BY periodo ASC", nativeQuery = true)
     List<Object[]> countPorDia();
+    List<PedidoEntity> findByFechaPedidoBetween(LocalDateTime desde, LocalDateTime hasta);
 }

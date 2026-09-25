@@ -4,6 +4,7 @@ import com.empaques.desa.domain.dto.EstadisticaPeriodoDto;
 import com.empaques.desa.domain.dto.PedidoDto;
 import com.empaques.desa.domain.dto.ResumenPedidosDto;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,6 +22,7 @@ public interface PedidoRepository {
     ResumenPedidosDto getResumen();
     List<EstadisticaPeriodoDto> getEstadisticasPorMes();
     List<EstadisticaPeriodoDto> getEstadisticasPorDia();
+    List<PedidoDto> getByRangoFechas(LocalDateTime desde, LocalDateTime hasta);
 
 
 }

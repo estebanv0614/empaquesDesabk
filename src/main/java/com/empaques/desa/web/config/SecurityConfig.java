@@ -114,6 +114,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PATCH, "/pedidos/**").hasAnyRole("ADMIN", "USER")
                         .requestMatchers(HttpMethod.PATCH, "/pedidos/*/pagar").hasAnyRole("ADMIN", "USER")
                         .requestMatchers(HttpMethod.DELETE, "/pedidos/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/pedidos/export").hasAnyRole("ADMIN", "USER")
 
                         .anyRequest().authenticated()
                 )

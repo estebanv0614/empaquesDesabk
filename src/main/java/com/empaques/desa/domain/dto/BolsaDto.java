@@ -11,7 +11,6 @@ public record BolsaDto(
         BigDecimal largoCm,
         BigDecimal calibre,
         BigDecimal precioBase,
-        BigDecimal stockActual,
         String imagenUrl,
         EstadoDto estado
         ) {}

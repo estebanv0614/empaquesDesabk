@@ -44,9 +44,6 @@ public class BolsaEntity {
     @Column(name = "precio_base")
     private BigDecimal precioBase;
 
-    @Column(name = "stock_actual")
-    private BigDecimal stockActual = BigDecimal.ZERO;
-
     @Column(name = "imagen_url")
     private String imagenUrl;
 

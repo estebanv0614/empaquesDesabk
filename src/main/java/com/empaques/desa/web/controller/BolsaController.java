@@ -57,7 +57,7 @@ public class BolsaController {
 
         BolsaDto dto = new BolsaDto(
                 null, name, description, tipo, anchoCm, largoCm, calibre,
-                precioBase, null, imagenUrl, new EstadoDto(idEstado, null)
+                precioBase, imagenUrl, new EstadoDto(idEstado, null)
         );
 
         return ResponseEntity.ok(bolsaService.save(dto));
@@ -80,7 +80,7 @@ public class BolsaController {
 
         BolsaDto dto = new BolsaDto(
                 id, name, description, tipo, anchoCm, largoCm, calibre,
-                precioBase, null, imagenUrl, new EstadoDto(idEstado, null)
+                precioBase, imagenUrl, new EstadoDto(idEstado, null)
         );
 
         return bolsaService.update(id, dto)

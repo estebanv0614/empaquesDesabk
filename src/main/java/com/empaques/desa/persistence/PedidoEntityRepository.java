@@ -181,4 +181,11 @@ public class PedidoEntityRepository implements PedidoRepository {
                 .map(row -> new EstadisticaPeriodoDto(row[0].toString(), ((Number) row[1]).longValue()))
                 .toList();
     }
+
+    @Override
+    public List<PedidoDto> getByRangoFechas(LocalDateTime desde, LocalDateTime hasta) {
+        return pedidoMapper.toDtoList(
+                crudPedido.findByFechaPedidoBetween(desde, hasta)
+        );
+    }
 }
