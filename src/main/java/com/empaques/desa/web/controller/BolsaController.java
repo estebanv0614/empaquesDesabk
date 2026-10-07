@@ -90,7 +90,6 @@ public class BolsaController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Integer id) {
-        System.out.println("ELIMINANDO BOLSA ID = " + id);
         boolean deleted = bolsaService.delete(id);
         if (!deleted) {
             return ResponseEntity.notFound().build();

@@ -1,10 +1,13 @@
 package com.empaques.desa.domain.service;
 
+import com.empaques.desa.domain.dto.DetallePedidoDto;
 import com.empaques.desa.domain.dto.EstadisticaPeriodoDto;
 import com.empaques.desa.domain.dto.PedidoDto;
 import com.empaques.desa.domain.dto.ResumenPedidosDto;
+import com.empaques.desa.domain.repository.OrdenProduccionRepository;
 import com.empaques.desa.domain.repository.PedidoRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -13,9 +16,11 @@ import java.util.Optional;
 @Service
 public class PedidoService {
     private final PedidoRepository pedidoRepository;
+    private final OrdenProduccionRepository ordenProduccion;
 
-    public PedidoService(PedidoRepository pedidoRepository) {
+    public PedidoService(PedidoRepository pedidoRepository, OrdenProduccionRepository ordenProduccion) {
         this.pedidoRepository = pedidoRepository;
+        this.ordenProduccion = ordenProduccion;
     }
 
     public List<PedidoDto> getAll() {
@@ -26,8 +31,13 @@ public class PedidoService {
         return pedidoRepository.getById(id);
     }
 
+    @Transactional
     public PedidoDto save(PedidoDto dto) {
-        return pedidoRepository.save(dto);
+        PedidoDto guardado = pedidoRepository.save(dto);
+        for (DetallePedidoDto detale : guardado.detalles()) {
+            ordenProduccion.crearDesdeDetalle(detale.id(), guardado.userVendedor().id());
+        }
+        return guardado;
     }
 
     public Optional<PedidoDto> update(Integer id, PedidoDto dto) {

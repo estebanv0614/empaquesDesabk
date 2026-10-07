@@ -40,7 +40,6 @@ public class RecetaBolsaController {
             @PathVariable("idBolsa") Integer idBolsa,
             @PathVariable("idMaterial") Integer idMaterial,
             @RequestBody RecetaBolsaDto dto) {
-        System.out.println("ENTRO AL UPDATE: " + idBolsa + " - " + idMaterial);
         return recetaBolsaService.update(idBolsa, idMaterial, dto)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());

@@ -22,7 +22,6 @@ public interface CrudPedidoEntity extends CrudRepository<PedidoEntity, Integer> 
     @Query(value = "SELECT COUNT(*) FROM pedido WHERE deleted_at IS NULL AND YEAR(fecha_pedido) = YEAR(CURDATE())", nativeQuery = true)
     long countEsteAnio();
 
-    // ===== Desglose histórico (para gráficos) =====
     @Query(value = "SELECT DATE_FORMAT(fecha_pedido, '%Y-%m') AS periodo, COUNT(*) AS cantidad " +
             "FROM pedido WHERE deleted_at IS NULL " +
             "GROUP BY DATE_FORMAT(fecha_pedido, '%Y-%m') " +

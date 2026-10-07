@@ -36,8 +36,6 @@ public class RecetaBolsaEntityRepository implements RecetaBolsaRepository {
     @Override
     public Optional<RecetaBolsaDto> getById(Integer idBolsa, Integer idMaterial) {
         RecetaBolsaPK pk = new RecetaBolsaPK(idBolsa, idMaterial);
-
-        System.out.println("PK BUSCADA = " + pk.getIdBolsa() + " - " + pk.getIdMaterial());
         return recetaBolsa.findById(pk)
                 .map(mapper::toDto);
     }
@@ -63,12 +61,8 @@ public class RecetaBolsaEntityRepository implements RecetaBolsaRepository {
     @Override
     public Optional<RecetaBolsaDto> update(Integer idBolsa, Integer idMaterial, RecetaBolsaDto dto) {
         RecetaBolsaPK pk = new RecetaBolsaPK(idBolsa, idMaterial);
-
-        System.out.println("BUSCANDO PK = " + idBolsa + " - " + idMaterial);
-
         return recetaBolsa.findById(pk)
                 .map(entity -> {
-                    System.out.println("REGISTRO ENCONTRADO");
                     entity.setCantidadRequerida(dto.cantidadRequerida());
                     return mapper.toDto(recetaBolsa.save(entity));
                 });

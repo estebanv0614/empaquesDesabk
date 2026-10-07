@@ -11,5 +11,4 @@ public interface MovimientoInventarioRepository {
     MovimientoInventarioDto save(MovimientoInventarioDto dto);
     Optional<MovimientoInventarioDto> update(Integer id, MovimientoInventarioDto dto);
     boolean delete(Integer id);
-
 }

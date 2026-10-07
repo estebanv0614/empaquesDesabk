@@ -39,6 +39,7 @@ public class SecurityConfig {
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/error").permitAll()
                         .requestMatchers("/uploads/**").permitAll()
+                        .requestMatchers("/uploads/gastos/**").permitAll()
                         // PERSONS
                         .requestMatchers(HttpMethod.GET, "/persons/**").authenticated()
                         .requestMatchers(HttpMethod.POST, "/persons/**").hasRole("ADMIN")
@@ -78,17 +79,13 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/ordenes-produccion/**").hasAnyRole("ADMIN", "USER")
                         .requestMatchers(HttpMethod.POST, "/ordenes-produccion/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/ordenes-produccion/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PATCH, "/ordenes-produccion/**").hasAnyRole("ADMIN", "USER")
                         .requestMatchers(HttpMethod.DELETE, "/ordenes-produccion/**").hasRole("ADMIN")
                         //MOVIMIENTO-INVENTARIO
                         .requestMatchers(HttpMethod.GET, "/movimientos-inventario/**").hasAnyRole("ADMIN", "USER")
                         .requestMatchers(HttpMethod.POST, "/movimientos-inventario/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/movimientos-inventario/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/movimientos-inventario/**").hasRole("ADMIN")
-                        //MOVIMIENTO-BOLSA
-                        .requestMatchers(HttpMethod.GET, "/movimientos-bolsa/**").hasAnyRole("ADMIN", "USER")
-                        .requestMatchers(HttpMethod.POST, "/movimientos-bolsa/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/movimientos-bolsa/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/movimientos-bolsa/**").hasRole("ADMIN")
                         //DOCUMENTO-COMERCIAL
                         .requestMatchers(HttpMethod.GET, "/documentos-comerciales/**").hasAnyRole("ADMIN", "USER")
                         .requestMatchers(HttpMethod.POST, "/documentos-comerciales/**").hasRole("ADMIN")
@@ -115,7 +112,12 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PATCH, "/pedidos/*/pagar").hasAnyRole("ADMIN", "USER")
                         .requestMatchers(HttpMethod.DELETE, "/pedidos/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/pedidos/export").hasAnyRole("ADMIN", "USER")
-
+                        //GASTOS
+                        .requestMatchers(HttpMethod.GET, "/gastos-operativos/**").hasAnyRole("ADMIN", "USER")
+                        .requestMatchers(HttpMethod.POST, "/gastos-operativos/**").hasAnyRole("ADMIN", "USER")
+                        .requestMatchers(HttpMethod.DELETE, "/gastos-operativos/**").hasRole("ADMIN")
+                        //NOMINA
+                        .requestMatchers("/nomina/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);

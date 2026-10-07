@@ -7,12 +7,15 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 public class WebConfiguracion implements WebMvcConfigurer {
-    @Value("${app.upload.dir:uploads/bolsas}")
-    private String uploadDir;
+    @Value("${app.upload.base:uploads}")
+    private String uploadBase;
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry){
         registry.addResourceHandler("/uploads/bolsas/**")
-                .addResourceLocations("file:" + uploadDir + "/");
+                .addResourceLocations("file:" + uploadBase + "/bolsas/");
+
+        registry.addResourceHandler("/uploads/gastos/**")
+                .addResourceLocations("file:" + uploadBase + "/gastos/");
     }
 }

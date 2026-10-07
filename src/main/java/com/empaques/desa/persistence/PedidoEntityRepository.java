@@ -17,6 +17,11 @@ import java.util.Optional;
 
 @Repository
 public class PedidoEntityRepository implements PedidoRepository {
+    private static final Integer ID_ESTADO_PENDIENTE = 2;
+    private static final Integer ID_ESTADO_ENTREGADO = 10;
+    private static final Integer ID_ESTADO_CANCELADO = 11;
+    private static final Integer ID_ESTADO_FINALIZADA = 13;
+
     private final CrudPedidoEntity crudPedido;
     private final CrudClientEntity crudClient;
     private final CrudUserEntity crudUser;
@@ -67,8 +72,8 @@ public class PedidoEntityRepository implements PedidoRepository {
         );
 
         entity.setEstado(
-                crudEstado.findById(dto.estado().id())
-                        .orElseThrow(() -> new RuntimeException("Estado no encontrado " + dto.estado().id()))
+                crudEstado.findById(ID_ESTADO_PENDIENTE)
+                        .orElseThrow(() -> new RuntimeException("Estado PENDIENTE no encontrado"))
         );
 
         if (dto.metodoPago() != null) {
@@ -77,7 +82,6 @@ public class PedidoEntityRepository implements PedidoRepository {
                             .orElseThrow(() -> new RuntimeException("Método de pago no encontrado " + dto.metodoPago().id()))
             );
         }
-
         List<DetallePedidoEntity> detalles = new java.util.ArrayList<>();
         for (int i = 0; i < dto.detalles().size(); i++) {
             var detalleDto = dto.detalles().get(i);
@@ -123,12 +127,20 @@ public class PedidoEntityRepository implements PedidoRepository {
     public Optional<PedidoDto> updateEstado(Integer id, Integer idEstado) {
         return crudPedido.findById(id)
                 .map(entity -> {
+                    Integer actual = entity.getEstado().getIdState(); // ajusta al getter de tu EstadoEntity
+                    if (!ID_ESTADO_ENTREGADO.equals(idEstado) && !ID_ESTADO_CANCELADO.equals(idEstado)) {
+                        throw new IllegalStateException(
+                                "El estado del pedido avanza automáticamente con la producción");
+                    }
+                    if (ID_ESTADO_ENTREGADO.equals(idEstado) && !ID_ESTADO_FINALIZADA.equals(actual)) {
+                        throw new IllegalStateException(
+                                "Solo se puede entregar un pedido con producción finalizada");
+                    }
                     entity.setEstado(
                             crudEstado.findById(idEstado)
                                     .orElseThrow(() -> new RuntimeException("Estado no encontrado " + idEstado))
                     );
-                    PedidoEntity updated = crudPedido.save(entity);
-                    return pedidoMapper.toDto(updated);
+                    return pedidoMapper.toDto(crudPedido.save(entity));
                 });
     }
 

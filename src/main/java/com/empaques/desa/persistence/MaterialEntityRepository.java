@@ -50,9 +50,6 @@ public class MaterialEntityRepository implements MaterialRepository {
                     entity.setName(dto.name());
                     entity.setUnidadMedida(dto.unidadMedida());
                     entity.setCostoUnitario(dto.costoUnitario());
-                    if (dto.stockActual() != null) {
-                        entity.setStockActual(dto.stockActual());
-                    }
                     MaterialEntity updated = crudMaterial.save(entity);
                     return materialMapper.toDto(updated);
                 });

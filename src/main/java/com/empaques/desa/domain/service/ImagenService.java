@@ -14,23 +14,27 @@ import java.util.UUID;
 
 @Service
 public class ImagenService {
-    @Value("${app.upload.dir:uploads/bolsas}")
-    private String uploadDir;
+    @Value("${app.upload.base:uploads}")
+    private String uploadBase;
 
     public String guardar(MultipartFile archivo) throws IOException {
+        return guardar(archivo, "bolsas");
+    }
+
+    public String guardar(MultipartFile archivo, String subcarpeta) throws IOException {
         if (archivo == null || archivo.isEmpty()) {
             return null;
         }
         String extension = StringUtils.getFilenameExtension(archivo.getOriginalFilename());
-        String nameArchivo = UUID.randomUUID() + (extension != null ? "." + extension : "");
+        String nombreArchivo = UUID.randomUUID() + (extension != null ? "." + extension : "");
 
-        Path directorio = Paths.get(uploadDir);
+        Path directorio = Paths.get(uploadBase, subcarpeta);
         if (!Files.exists(directorio)) {
             Files.createDirectories(directorio);
         }
-        Path rutaCompleta = directorio.resolve(nameArchivo);
+        Path rutaCompleta = directorio.resolve(nombreArchivo);
         Files.copy(archivo.getInputStream(), rutaCompleta, StandardCopyOption.REPLACE_EXISTING);
 
-        return "/uploads/bolsas/" + nameArchivo;
+        return "/uploads/" + subcarpeta + "/" + nombreArchivo;
     }
 }

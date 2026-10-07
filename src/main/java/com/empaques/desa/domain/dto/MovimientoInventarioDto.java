@@ -7,6 +7,8 @@ import java.time.LocalDateTime;
 
 public record MovimientoInventarioDto(
         Integer id,
+        Integer idGasto,
+        BigDecimal costoUnitario,
         MaterialDto material,
         OrdenProduccionDto ordenProduccion,
         UserDto user,

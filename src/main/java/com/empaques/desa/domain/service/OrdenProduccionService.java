@@ -1,9 +1,12 @@
 package com.empaques.desa.domain.service;
 
+import com.empaques.desa.domain.dto.MaterialFaltanteDto;
 import com.empaques.desa.domain.dto.OrdenProduccionDto;
 import com.empaques.desa.domain.repository.OrdenProduccionRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,5 +36,20 @@ public class OrdenProduccionService {
 
     public boolean delete(Integer id) {
         return produccionRepository.delete(id);
+    }
+
+    public  List<MaterialFaltanteDto> validarMaterial(Integer id) {
+        return produccionRepository.validarMaterial(id);
+    }
+
+    @Transactional
+    public OrdenProduccionDto iniciar(Integer id) {
+        return produccionRepository.iniciar(id);
+    }
+
+    @Transactional
+    public OrdenProduccionDto finalizar (Integer id, BigDecimal producida, BigDecimal merma,
+                                         String observacion, Integer idUsuario) {
+        return produccionRepository.finalizar(id, producida, merma, observacion, idUsuario);
     }
 }

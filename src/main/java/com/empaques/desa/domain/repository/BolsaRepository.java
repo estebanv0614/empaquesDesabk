@@ -12,5 +12,4 @@ public interface BolsaRepository {
     BolsaDto save(BolsaDto dto);
     Optional<BolsaDto> update(Integer id, BolsaDto dto);
     boolean delete(Integer id);
-
 }

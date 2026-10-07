@@ -23,6 +23,4 @@ public interface PedidoRepository {
     List<EstadisticaPeriodoDto> getEstadisticasPorMes();
     List<EstadisticaPeriodoDto> getEstadisticasPorDia();
     List<PedidoDto> getByRangoFechas(LocalDateTime desde, LocalDateTime hasta);
-
-
 }

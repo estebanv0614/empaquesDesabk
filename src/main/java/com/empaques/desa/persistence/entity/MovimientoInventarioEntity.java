@@ -28,6 +28,12 @@ public class MovimientoInventarioEntity {
     @Column(name = "id_movimiento")
     private Integer idMovimiento;
 
+    @Column(name = "id_gasto")
+    private Integer idGasto;
+
+    @Column(name = "costo_unitario")
+    private BigDecimal costoUnitario;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_material")
     private MaterialEntity material;

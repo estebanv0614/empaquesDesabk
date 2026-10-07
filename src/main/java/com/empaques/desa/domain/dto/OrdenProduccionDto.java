@@ -5,8 +5,14 @@ import java.time.LocalDateTime;
 
 public record OrdenProduccionDto(
         Integer id,
-        BolsaDto bolsa,
+        DetallePedidoDto detallePedido,
+        UserDto user,
+        BigDecimal cantidadProducida,
+        BigDecimal cantidadMerma,
+        LocalDateTime fechaFin,
+        String observacion,
         BigDecimal cantidadProducir,
         LocalDateTime fechaProduccion,
-        EstadoDto estado
+        EstadoDto estado,
+        String numeroPedido
 ) {}

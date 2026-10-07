@@ -8,6 +8,7 @@ import org.hibernate.annotations.SQLRestriction;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -16,6 +17,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Table(name = "orden_produccion")
+@EntityListeners(AuditingEntityListener.class)
 @SQLDelete(sql = "UPDATE orden_produccion SET deleted_at = CURRENT_TIMESTAMP WHERE id_orden = ?")
 @SQLRestriction("deleted_at IS NULL")
 public class OrdenProduccionEntity {
@@ -26,11 +28,26 @@ public class OrdenProduccionEntity {
     private Integer idOrden;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_bolsa")
-    private BolsaEntity bolsa;
+    @JoinColumn(name = "id_detalle_pedido", nullable = false)
+    private DetallePedidoEntity detallePedido;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_usuario", nullable = false)
+    private UserEntity user;
 
     @Column(name = "cantidad_producir")
     private BigDecimal cantidadProducir;
+
+    @Column(name = "cantidad_producida")
+    private BigDecimal cantidadProducida = BigDecimal.ZERO;
+
+    @Column(name = "cantidad_merma")
+    private BigDecimal cantidadMerma = BigDecimal.ZERO;
+
+    @Column(name = "fecha_fin")
+    private LocalDateTime fechaFin;
+
+    private String observacion;
 
     @Column(name = "fecha_produccion")
     private LocalDateTime fechaProduccion;

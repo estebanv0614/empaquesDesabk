@@ -21,5 +21,4 @@ public record PedidoDto(
         Boolean pagado,
         LocalDateTime fechaPago,
         List<DetallePedidoDto> detalles
-) {
-}
+) {}

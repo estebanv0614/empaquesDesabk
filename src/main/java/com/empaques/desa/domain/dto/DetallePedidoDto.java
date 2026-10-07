@@ -8,6 +8,4 @@ public record DetallePedidoDto(
         Integer cantidad,
         BigDecimal precioUnitarioVenta,
         BigDecimal subtotalLinea
-
-) {
-}
+) {}
