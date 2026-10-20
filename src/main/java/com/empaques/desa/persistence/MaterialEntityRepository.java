@@ -40,6 +40,9 @@ public class MaterialEntityRepository implements MaterialRepository {
         if (entity.getStockActual() == null) {
             entity.setStockActual(BigDecimal.ZERO);
         }
+        if (entity.getStockMinimo() == null) {
+            entity.setStockMinimo(BigDecimal.ZERO);
+        }
         return materialMapper.toDto(crudMaterial.save(entity));
     }
 
@@ -49,7 +52,8 @@ public class MaterialEntityRepository implements MaterialRepository {
                 .map(entity ->  {
                     entity.setName(dto.name());
                     entity.setUnidadMedida(dto.unidadMedida());
-                    entity.setCostoUnitario(dto.costoUnitario());
+                    entity.setCotegoria(dto.categoria());
+                    entity.setStockMinimo(dto.stockMinimo());
                     MaterialEntity updated = crudMaterial.save(entity);
                     return materialMapper.toDto(updated);
                 });

@@ -32,8 +32,9 @@ public class OrdenProduccionEntityRepository implements OrdenProduccionRepositor
     private final CrudMaterialEntity material;
     private final CrudMovimientoInventarioEntity movimientoInventario;
     private final CrudPedidoEntity pedidoCr;
+    private final CrudGastoOperativoEntity gastoCr;
 
-    public OrdenProduccionEntityRepository(CrudOrdenProduccionEntity ordenProduccion, CrudEstadoEntity estadoEntity, OrdenProduccionMapper produccionMapper, CrudDetallePedidoEntity detallePedido, CrudUserEntity user, CrudRecetaBolsaEntity recetaBolsa, CrudMaterialEntity material, CrudMovimientoInventarioEntity movimientoInventario, CrudPedidoEntity pedidoCr) {
+    public OrdenProduccionEntityRepository(CrudOrdenProduccionEntity ordenProduccion, CrudEstadoEntity estadoEntity, OrdenProduccionMapper produccionMapper, CrudDetallePedidoEntity detallePedido, CrudUserEntity user, CrudRecetaBolsaEntity recetaBolsa, CrudMaterialEntity material, CrudMovimientoInventarioEntity movimientoInventario, CrudPedidoEntity pedidoCr, CrudGastoOperativoEntity gastoCr) {
         this.ordenProduccion = ordenProduccion;
         this.estadoEntity = estadoEntity;
         this.produccionMapper = produccionMapper;
@@ -43,6 +44,7 @@ public class OrdenProduccionEntityRepository implements OrdenProduccionRepositor
         this.material = material;
         this.movimientoInventario = movimientoInventario;
         this.pedidoCr = pedidoCr;
+        this.gastoCr = gastoCr;
     }
 
     @Override
@@ -183,8 +185,8 @@ public class OrdenProduccionEntityRepository implements OrdenProduccionRepositor
             mov.setCantidad(consumo);
             mov.setStockAntes(antes);
             mov.setStockDespues(despues);
-            mov.setCostoUnitario(m.getCostoUnitario());
             mov.setReferencia("OP-" + orden.getIdOrden());
+            mov.setCostoUnitario(gastoCr.findUltimoCosto(m.getIdMaterial()).orElse(null));
             movimientoInventario.save(mov);
         }
         orden.setCantidadProducida(producida);
@@ -201,19 +203,14 @@ public class OrdenProduccionEntityRepository implements OrdenProduccionRepositor
     private void sincronizarEstadoPedido(OrdenProduccionEntity orden) {
         PedidoEntity pedido = orden.getDetallePedido().getPedido();
         Integer estadoActual = pedido.getEstado().getIdState();
-
         if (ID_ESTADO_CANCELADO.equals(estadoActual) || ID_ESTADO_ENTREGADO.equals(estadoActual)) {
             return;
         }
-
         List<OrdenProduccionEntity> ordenes =
                 ordenProduccion.findByDetallePedido_Pedido_IdPedido(pedido.getIdPedido());
-
         boolean todasFinalizadas = !ordenes.isEmpty()
                 && ordenes.stream().allMatch(o -> o.getFechaFin() != null);
-
         Integer nuevoEstado = todasFinalizadas ? ID_ESTADO_FINALIZADA : ID_ESTADO_EN_PRODUCCION;
-
         if (!nuevoEstado.equals(estadoActual)) {
             pedido.setEstado(estadoEntity.findById(nuevoEstado)
                     .orElseThrow(() -> new RuntimeException("Estado no encontrado " + nuevoEstado)));

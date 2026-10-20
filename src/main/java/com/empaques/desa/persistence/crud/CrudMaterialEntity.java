@@ -10,7 +10,7 @@ import org.springframework.data.repository.query.Param;
 import java.util.Optional;
 
 public interface CrudMaterialEntity extends CrudRepository<MaterialEntity, Integer> {
-    //@Lock(LockModeType.PESSIMISTIC_WRITE)
-    @Query("SELECT m FROM MaterialEntity m WHERE m.idMaterial = :id")
+    @Query(value = "SELECT * FROM material WHERE id_material = :id AND deleted_at IS NULL FOR UPDATE",
+            nativeQuery = true)
     Optional<MaterialEntity> findByIdForUpdate(@Param("id") Integer id);
 }

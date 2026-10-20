@@ -15,6 +15,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -71,7 +72,7 @@ public class GastoOperativoEntityRepository implements GastoOperativoRepository 
             if (request.cantidad() == null || request.cantidad().compareTo(BigDecimal.ZERO) <= 0) {
                 throw new RuntimeException("Debes indicar una cantidad mayor a 0 para la compra de material");
             }
-            materiales = materialEntity.findById(request.idMaterial())
+            materiales = materialEntity.findByIdForUpdate(request.idMaterial())
                     .orElseThrow(() -> new RuntimeException("Material no encontrado"));
             gasto.setMaterial(materiales);
             gasto.setCantidad(request.cantidad());
@@ -97,6 +98,8 @@ public class GastoOperativoEntityRepository implements GastoOperativoRepository 
             movi.setStockDespues(stockDespues);
             movi.setReferencia("Gasto operativo #" + guardado.getId());
             movi.setObservacion("Compra de material");
+            movi.setIdGasto(guardado.getId());
+            movi.setCostoUnitario(request.monto().divide(request.cantidad(), 2, RoundingMode.HALF_UP));
             movimientoInventario.save(movi);
         }
         return gastoOperativoMapper.toDto(guardado);

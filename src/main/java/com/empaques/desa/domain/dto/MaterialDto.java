@@ -6,6 +6,7 @@ public record MaterialDto(
         Integer id,
         String name,
         String unidadMedida,
-        BigDecimal costoUnitario,
-        BigDecimal stockActual
+        String categoria,
+        BigDecimal stockActual,
+        BigDecimal stockMinimo
 ) {}

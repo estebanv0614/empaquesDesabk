@@ -97,8 +97,9 @@ public class ExcelPedidoService {
                     }
                 }
             }
-            for (int i = 0; i < columnas.length; i++) {
-                sheet.autoSizeColumn(i);
+            int[] anchos = {14, 28, 18, 16, 28, 24, 18, 18, 18, 14, 10, 18, 16, 36, 10, 16, 16, 16, 14, 16, 40};
+            for (int i = 0; i < anchos.length; i++) {
+                sheet.setColumnWidth(i, anchos[i] * 256);
             }
 
             workbook.write(out);
