@@ -196,8 +196,6 @@ public class PedidoEntityRepository implements PedidoRepository {
 
     @Override
     public List<PedidoDto> getByRangoFechas(LocalDateTime desde, LocalDateTime hasta) {
-        return pedidoMapper.toDtoList(
-                crudPedido.findByFechaPedidoBetween(desde, hasta)
-        );
+        return pedidoMapper.toDtoList(crudPedido.findForExport(desde, hasta));
     }
 }

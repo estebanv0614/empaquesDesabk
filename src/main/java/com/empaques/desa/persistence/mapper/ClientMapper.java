@@ -22,5 +22,4 @@ public interface ClientMapper {
     @Mapping(target = "person", ignore = true)
     @Mapping(target = "estado", ignore = true)
     ClientEntity toEntity(ClientDto dto);
-
 }

@@ -41,7 +41,7 @@ public class CotizacionPdfService {
         agregarTablaItems(document, documento.detalles());
         agregarTotales(document, documento);
         agregarNotas(document);
-        agregarFirma(document);
+        agregarFirma(document, documento);
 
         document.close();
         return baos.toByteArray();
@@ -260,7 +260,7 @@ public class CotizacionPdfService {
     }
 
     // ===================== FIRMA FIJA =====================
-    private void agregarFirma(Document document) throws DocumentException, IOException {
+    private void agregarFirma(Document document, DocumentoComercialDto doc) throws DocumentException, IOException {
         PdfPTable firmaTable = new PdfPTable(3);
         firmaTable.setWidthPercentage(100);
         firmaTable.setWidths(new float[]{55, 30, 15});
@@ -270,7 +270,7 @@ public class CotizacionPdfService {
         firmaTable.addCell(vacia);
 
         PdfPTable datosFirma = new PdfPTable(1);
-        agregarLineaFirma(datosFirma, "JAVIER SALDAÑA", FONT_LABEL);
+        agregarLineaFirma(datosFirma, nombreResponsable(doc), FONT_LABEL);
         agregarLineaFirma(datosFirma, "EMPAQUES DESA", FONT_NORMAL);
         agregarLineaFirma(datosFirma, "empaquesdesa@gmail.com", FONT_NORMAL);
         agregarLineaFirma(datosFirma, "CEL: 321 382 6385 - 310 861 2970", FONT_NORMAL);
@@ -306,6 +306,15 @@ public class CotizacionPdfService {
         cell.setBorder(Rectangle.NO_BORDER);
         cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
         table.addCell(cell);
+    }
+
+    private String nombreResponsable(DocumentoComercialDto doc) {
+        UserDto user = doc.user();
+        if (user == null) return "EMPAQUES DESA";
+        if (user.person() != null && user.person().name() != null && !user.person().name().isBlank()) {
+            return user.person().name().toUpperCase();
+        }
+        return user.username() != null ? user.username().toUpperCase() : "EMPAQUES DESA";
     }
 
     // ===================== BORDE VERDE DE LA PÁGINA =====================

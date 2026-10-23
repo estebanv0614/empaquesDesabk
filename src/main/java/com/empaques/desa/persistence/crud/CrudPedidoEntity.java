@@ -3,6 +3,7 @@ package com.empaques.desa.persistence.crud;
 import com.empaques.desa.persistence.entity.PedidoEntity;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -34,4 +35,22 @@ public interface CrudPedidoEntity extends CrudRepository<PedidoEntity, Integer> 
             "ORDER BY periodo ASC", nativeQuery = true)
     List<Object[]> countPorDia();
     List<PedidoEntity> findByFechaPedidoBetween(LocalDateTime desde, LocalDateTime hasta);
+
+    @Query("""
+    SELECT DISTINCT p FROM PedidoEntity p
+    LEFT JOIN FETCH p.client c
+    LEFT JOIN FETCH c.person
+    LEFT JOIN FETCH c.estado
+    LEFT JOIN FETCH p.userVendedor u
+    LEFT JOIN FETCH u.person
+    LEFT JOIN FETCH p.estado
+    LEFT JOIN FETCH p.metodoPago
+    LEFT JOIN FETCH p.detallePedidos d
+    LEFT JOIN FETCH d.bolsa b
+    LEFT JOIN FETCH b.estado
+    WHERE p.fechaPedido BETWEEN :desde AND :hasta
+    ORDER BY p.fechaPedido
+    """)
+    List<PedidoEntity> findForExport(@Param("desde") LocalDateTime desde,
+                                     @Param("hasta") LocalDateTime hasta);
 }

@@ -19,7 +19,7 @@ import java.time.LocalDateTime;
 @Setter
 @Table(name = "gasto_operativo")
 @EntityListeners(AuditingEntityListener.class)
-@SQLDelete(sql = "UPDATE gasto_operativo SET deleted_at = CURRENT_TIMESTAMP WHERE id_gasto = ?")
+@SQLDelete(sql = "UPDATE gasto_operativo SET deleted_at = CURRENT_TIMESTAMP WHERE id_gastos_operativos = ?")
 @SQLRestriction("deleted_at IS NULL")
 public class GastoOperativoEntity {
     @Id

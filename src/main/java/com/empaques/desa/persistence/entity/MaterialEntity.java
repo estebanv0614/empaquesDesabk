@@ -32,8 +32,10 @@ public class MaterialEntity {
     @Column(name = "unidad_medida")
     private String unidadMedida;
 
-    @Column(name = "costo_unitario")
-    private BigDecimal costoUnitario;
+    private String cotegoria;
+
+    @Column(name = "stock_minimo")
+    private BigDecimal stockMinimo = BigDecimal.ZERO;
 
     @Column(name = "stock_actual")
     private BigDecimal stockActual = BigDecimal.ZERO;

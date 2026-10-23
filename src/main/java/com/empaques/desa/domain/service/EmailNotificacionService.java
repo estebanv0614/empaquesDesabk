@@ -62,7 +62,6 @@ public class EmailNotificacionService {
 
     @Async
     public void enviarCotizacionPdf(DocumentoComercialDto documento) {
-        // Validación: si el cliente no tiene email, no hay a dónde mandarlo
         if (documento.client() == null || documento.client().person() == null
                 || documento.client().person().email() == null
                 || documento.client().person().email().isBlank()) {
