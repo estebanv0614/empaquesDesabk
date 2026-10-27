@@ -17,10 +17,10 @@ import java.util.Optional;
 
 @Repository
 public class PedidoEntityRepository implements PedidoRepository {
-    private static final Integer ID_ESTADO_PENDIENTE = 2;
-    private static final Integer ID_ESTADO_ENTREGADO = 10;
-    private static final Integer ID_ESTADO_CANCELADO = 11;
-    private static final Integer ID_ESTADO_FINALIZADA = 13;
+    private static final Integer ID_ESTADO_PENDIENTE = 3;
+    private static final Integer ID_ESTADO_ENTREGADO = 5;
+    private static final Integer ID_ESTADO_CANCELADO = 4;
+    private static final Integer ID_ESTADO_FINALIZADA = 8;
 
     private final CrudPedidoEntity crudPedido;
     private final CrudClientEntity crudClient;

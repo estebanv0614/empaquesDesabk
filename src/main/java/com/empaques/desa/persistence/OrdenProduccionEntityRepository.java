@@ -17,11 +17,11 @@ import java.util.Optional;
 
 @Repository
 public class OrdenProduccionEntityRepository implements OrdenProduccionRepository {
-    private static final Integer ID_ESTADO_PENDIENTE = 2;
-    private static final Integer ID_ESTADO_EN_PRODUCCION = 12;
-    private static final Integer ID_ESTADO_FINALIZADA = 13;
-    private static final Integer ID_ESTADO_ENTREGADO = 10;
-    private static final Integer ID_ESTADO_CANCELADO = 11;
+    private static final Integer ID_ESTADO_PENDIENTE = 3;
+    private static final Integer ID_ESTADO_EN_PRODUCCION = 7;
+    private static final Integer ID_ESTADO_FINALIZADA = 5;
+    private static final Integer ID_ESTADO_ENTREGADO = 8;
+    private static final Integer ID_ESTADO_CANCELADO = 4;
 
     private final CrudOrdenProduccionEntity ordenProduccion;
     private final CrudEstadoEntity estadoEntity;

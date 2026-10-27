@@ -21,7 +21,7 @@ import java.util.Optional;
 
 @Repository
 public class SolicitudCotizacionEntityRepository implements SolicitudCotizacionRepository {
-    private static final Integer ESTADO_PENDENTE_ID = 2;
+    private static final Integer ESTADO_PENDENTE_ID = 3;
 
     private final CrudSolicitudCotizacionEntity solicitud;
     private final CrudEstadoEntity  estado;
