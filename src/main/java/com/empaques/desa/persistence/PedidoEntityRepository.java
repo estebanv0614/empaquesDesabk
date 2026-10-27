@@ -127,7 +127,12 @@ public class PedidoEntityRepository implements PedidoRepository {
     public Optional<PedidoDto> updateEstado(Integer id, Integer idEstado) {
         return crudPedido.findById(id)
                 .map(entity -> {
-                    Integer actual = entity.getEstado().getIdState(); // ajusta al getter de tu EstadoEntity
+                    Integer actual = entity.getEstado().getIdState();
+
+                    if (ID_ESTADO_ENTREGADO.equals(actual) || ID_ESTADO_CANCELADO.equals(actual)) {
+                        throw new IllegalStateException(
+                                "El pedido ya está en un estado final y no se puede cambiar");
+                    }
                     if (!ID_ESTADO_ENTREGADO.equals(idEstado) && !ID_ESTADO_CANCELADO.equals(idEstado)) {
                         throw new IllegalStateException(
                                 "El estado del pedido avanza automáticamente con la producción");
@@ -168,6 +173,22 @@ public class PedidoEntityRepository implements PedidoRepository {
     @Override
     public List<PedidoDto> getByClientId(Integer idClient) {
         return pedidoMapper.toDtoList(crudPedido.findByClient_IdClient(idClient));
+    }
+
+    @Override
+    public Optional<PedidoDto> marcarComoEntregado(Integer id) {
+        return crudPedido.findById(id)
+                .map(entity -> {
+                    if (Boolean.TRUE.equals(entity.getEntregado())) {
+                        throw new IllegalStateException("El pedido ya fue entregado");
+                    }
+                    if (!ID_ESTADO_FINALIZADA.equals(entity.getEstado().getIdState())) {
+                        throw new IllegalStateException("Solo se puede entregar un pedido con producción finalizada");
+                    }
+                    entity.setEntregado(true);
+                    entity.setFechaEntrega(LocalDateTime.now());
+                    return pedidoMapper.toDto(crudPedido.save(entity));
+                });
     }
 
     @Override

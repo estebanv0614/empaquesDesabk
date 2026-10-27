@@ -76,4 +76,8 @@ public class PedidoService {
     public List<PedidoDto> getByRangoFechas(LocalDateTime desde, LocalDateTime hasta) {
         return pedidoRepository.getByRangoFechas(desde, hasta);
     }
+
+    public Optional<PedidoDto> marcarComoEntregado(Integer id){
+        return pedidoRepository.marcarComoEntregado(id);
+    }
 }

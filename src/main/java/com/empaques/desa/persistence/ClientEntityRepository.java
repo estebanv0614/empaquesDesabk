@@ -1,5 +1,6 @@
 package com.empaques.desa.persistence;
 
+import com.empaques.desa.domain.TipoCliente;
 import com.empaques.desa.domain.dto.ClientDto;
 import com.empaques.desa.domain.dto.EmployeeDto;
 import com.empaques.desa.domain.repository.ClientRepository;
@@ -50,6 +51,9 @@ public class ClientEntityRepository implements ClientRepository {
                 crudEstado.findById(dto.estado().id())
                         .orElseThrow(() -> new RuntimeException("Estado not found " + dto.estado().id()))
         );
+        if (entity.getTipoCliente() == null) {
+            entity.setTipoCliente(TipoCliente.DETAL);
+        }
         return clientMapper.toDto(crudClient.save(entity));
     }
 
@@ -58,7 +62,12 @@ public class ClientEntityRepository implements ClientRepository {
         return crudClient.findById(id)
                 .map( entity -> {
                     entity.setEmpresa(dto.empresa());
-
+                    if (dto.tipoCliente() != null) {
+                        entity.setTipoCliente(dto.tipoCliente());
+                    }
+                    entity.setCiudad(dto.ciudad());
+                    entity.setDireccionEntrega(dto.direccionEntrega());
+                    entity.setObservaciones(dto.observaciones());
                     entity.setEstado(
                             crudEstado.findById(dto.estado().id())
                                     .orElseThrow(() -> new RuntimeException("Estado not found " + dto.estado().id()))

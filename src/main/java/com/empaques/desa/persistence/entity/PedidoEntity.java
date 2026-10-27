@@ -62,6 +62,12 @@ public class PedidoEntity {
 
     private String observacion;
 
+    @Column(name = "entregado")
+    private Boolean entregado = false;
+
+    @Column(name = "fecha_entrega")
+    private LocalDateTime fechaEntrega;
+
     @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<DetallePedidoEntity> detallePedidos;
 
