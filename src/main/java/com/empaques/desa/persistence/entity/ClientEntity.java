@@ -1,5 +1,6 @@
 package com.empaques.desa.persistence.entity;
 
+import com.empaques.desa.domain.TipoCliente;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -31,6 +32,18 @@ public class ClientEntity {
     private PersonEntity person;
 
     private String empresa;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "tipo_cliente", nullable = false)
+    private TipoCliente tipoCliente = TipoCliente.DETAL;
+
+    private String ciudad;
+
+    @Column(name = "direccion_entrega")
+    private String direccionEntrega;
+
+    @Column(columnDefinition = "TEXT")
+    private String observaciones;
 
     @ManyToOne
     @JoinColumn(name = "id_estado")

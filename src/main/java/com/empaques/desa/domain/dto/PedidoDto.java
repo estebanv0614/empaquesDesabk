@@ -13,6 +13,8 @@ public record PedidoDto(
         EstadoDto estado,
         LocalDateTime fechaPedido,
         LocalDate fechaEntregaEstimada,
+        Boolean entregado,
+        LocalDateTime fechaEntrega,
         BigDecimal subtotal,
         BigDecimal impuestos,
         BigDecimal total,

@@ -47,7 +47,7 @@ public class CotizacionPdfService {
         return baos.toByteArray();
     }
 
-    // ===================== ENCABEZADO =====================
+    // ENCABEZADO
     private void agregarEncabezado(Document document, DocumentoComercialDto doc) throws DocumentException, IOException {
         PdfPTable header = new PdfPTable(2);
         header.setWidthPercentage(100);

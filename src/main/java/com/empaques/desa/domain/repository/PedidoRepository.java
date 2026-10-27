@@ -17,7 +17,7 @@ public interface PedidoRepository {
     Optional<PedidoDto> marcarComoPagado(Integer id);
     boolean delete(Integer id);
     List<PedidoDto> getByClientId(Integer idClient);
-
+    Optional<PedidoDto>marcarComoEntregado(Integer id);
 
     ResumenPedidosDto getResumen();
     List<EstadisticaPeriodoDto> getEstadisticasPorMes();

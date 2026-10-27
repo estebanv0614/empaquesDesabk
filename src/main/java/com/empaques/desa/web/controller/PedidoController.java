@@ -78,6 +78,13 @@ public class PedidoController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @PatchMapping("/{id}/entregar")
+    public ResponseEntity<PedidoDto> marcarComoEntregado(@PathVariable Integer id) {
+        return pedidoService.marcarComoEntregado(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
     @PatchMapping("/{id}/pagar")
     public ResponseEntity<PedidoDto> marcarComoPagado(@PathVariable Integer id) {
         return pedidoService.marcarComoPagado(id)
