@@ -19,8 +19,8 @@ import java.util.Optional;
 public class OrdenProduccionEntityRepository implements OrdenProduccionRepository {
     private static final Integer ID_ESTADO_PENDIENTE = 3;
     private static final Integer ID_ESTADO_EN_PRODUCCION = 7;
-    private static final Integer ID_ESTADO_FINALIZADA = 5;
-    private static final Integer ID_ESTADO_ENTREGADO = 8;
+    private static final Integer ID_ESTADO_FINALIZADA = 8;
+    private static final Integer ID_ESTADO_ENTREGADO = 5;
     private static final Integer ID_ESTADO_CANCELADO = 4;
 
     private final CrudOrdenProduccionEntity ordenProduccion;
