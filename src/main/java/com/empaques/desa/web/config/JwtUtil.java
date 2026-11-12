@@ -20,7 +20,7 @@ public class JwtUtil {
                 .withSubject(username)
                 .withIssuer("empaques-desa")
                 .withIssuedAt(new Date())
-                .withExpiresAt(new Date(System.currentTimeMillis() + TimeUnit.DAYS.toMillis(15)))
+                .withExpiresAt(new Date(System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(120)))
                 .sign(ALGORITHM);
     }
 
