@@ -1,6 +1,8 @@
 package com.empaques.desa.persistence;
 
 import com.empaques.desa.domain.TipoMovimiento;
+import com.empaques.desa.domain.dto.ConsumoMaterialDto;
+import com.empaques.desa.domain.dto.ConsumoSugeridoDto;
 import com.empaques.desa.domain.dto.MaterialFaltanteDto;
 import com.empaques.desa.domain.dto.OrdenProduccionDto;
 import com.empaques.desa.domain.repository.OrdenProduccionRepository;
@@ -11,9 +13,7 @@ import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Repository
 public class OrdenProduccionEntityRepository implements OrdenProduccionRepository {
@@ -22,6 +22,8 @@ public class OrdenProduccionEntityRepository implements OrdenProduccionRepositor
     private static final Integer ID_ESTADO_FINALIZADA = 8;
     private static final Integer ID_ESTADO_ENTREGADO = 5;
     private static final Integer ID_ESTADO_CANCELADO = 4;
+
+    private static final String CATEGORIA_INTERCAMBIABLE = "TINTA";
 
     private final CrudOrdenProduccionEntity ordenProduccion;
     private final CrudEstadoEntity estadoEntity;
@@ -106,7 +108,7 @@ public class OrdenProduccionEntityRepository implements OrdenProduccionRepositor
         OrdenProduccionEntity orden = new OrdenProduccionEntity();
         orden.setDetallePedido(detalle);
         orden.setUser(user.findById(idUsuario)
-                .orElseThrow(() ->new RuntimeException("Usuario no encontrado " + idUsuario)));
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado " + idUsuario)));
         orden.setEstado(estadoEntity.findById(ID_ESTADO_PENDIENTE)
                 .orElseThrow(() -> new RuntimeException("Estado pendiente no encontrado")));
         orden.setCantidadProducir(BigDecimal.valueOf(detalle.getCantidad()));
@@ -116,37 +118,55 @@ public class OrdenProduccionEntityRepository implements OrdenProduccionRepositor
         return produccionMapper.toDto(ordenProduccion.save(orden));
     }
 
+    /** Vista previa (sin bloqueos): qué material faltaría si se iniciara la orden ahora. */
     @Override
     public List<MaterialFaltanteDto> validarMaterial(Integer idOrden) {
         OrdenProduccionEntity orden = ordenProduccion.findById(idOrden)
                 .orElseThrow(() -> new RuntimeException("Orden no encontrada " + idOrden));
-        Integer idBolsa = orden.getDetallePedido().getBolsa().getIdBolsa();
-        List<MaterialFaltanteDto> faltantes = new ArrayList<>();
-
-        for (RecetaBolsaEntity r : recetaBolsa.findByIdBolsa(idBolsa)) {
-            MaterialEntity m = r.getMaterial();
-            BigDecimal requerido = r.getCantidadRequerida().multiply(orden.getCantidadProducir());
-            if (m.getStockActual().compareTo(requerido) < 0) {
-                faltantes.add(new MaterialFaltanteDto(
-                        m.getIdMaterial(), m.getName(), requerido, m.getStockActual(),
-                        requerido.subtract(m.getStockActual())));
-            }
-        }
-        return faltantes;
+        List<RecetaBolsaEntity> receta = recetaBolsa.findByIdBolsa(
+                        orden.getDetallePedido().getBolsa().getIdBolsa())
+                .stream().filter(r -> !esIntercambiable(r.getMaterial())).toList();
+        return calcularFaltantes(orden, receta, null);
     }
 
     @Override
     public OrdenProduccionDto iniciar(Integer idOrden) {
-        List<MaterialFaltanteDto> faltantes = validarMaterial(idOrden);
-        if (!faltantes.isEmpty()) {
-            throw  new IllegalStateException("Material insuficiente: " + faltantes);
-        }
-        OrdenProduccionEntity orden = ordenProduccion.findById(idOrden).orElseThrow();
+        OrdenProduccionEntity orden = ordenProduccion.findById(idOrden)
+                .orElseThrow(() -> new RuntimeException("Orden no encontrada " + idOrden));
+
         if (orden.getFechaFin() != null) {
             throw new IllegalStateException("La orden ya fue finalizada");
         }
+        if (!ID_ESTADO_PENDIENTE.equals(orden.getEstado().getIdState())) {
+            throw new IllegalStateException("Solo se puede iniciar una orden en estado pendiente");
+        }
+
+        List<RecetaBolsaEntity> receta = recetaBolsa.findByIdBolsa(
+                orden.getDetallePedido().getBolsa().getIdBolsa());
+        if (receta.isEmpty()) {
+            throw new IllegalStateException("La bolsa de esta orden no tiene receta definida");
+        }
+
+        // Las tintas se validan al finalizar, cuando se sabe el color realmente usado
+        List<RecetaBolsaEntity> aValidar = receta.stream()
+                .filter(r -> !esIntercambiable(r.getMaterial())).toList();
+
+        // Bloquear los materiales en orden de id (evita deadlocks y que dos inicios validen a la vez)
+        Map<Integer, MaterialEntity> bloqueados = new HashMap<>();
+        aValidar.stream()
+                .map(r -> r.getMaterial().getIdMaterial())
+                .sorted()
+                .forEach(idMat -> bloqueados.put(idMat,
+                        material.findByIdForUpdate(idMat)
+                                .orElseThrow(() -> new RuntimeException("Material no encontrado " + idMat))));
+
+        List<MaterialFaltanteDto> faltantes = calcularFaltantes(orden, aValidar, bloqueados);
+        if (!faltantes.isEmpty()) {
+            throw new IllegalStateException("Material insuficiente: " + faltantes);
+        }
+
         orden.setEstado(estadoEntity.findById(ID_ESTADO_EN_PRODUCCION)
-                .orElseThrow(()-> new RuntimeException("Estado 'En producción' no encontrado")));
+                .orElseThrow(() -> new RuntimeException("Estado 'En producción' no encontrado")));
         orden.setFechaProduccion(LocalDateTime.now());
         OrdenProduccionEntity guardada = ordenProduccion.save(orden);
         sincronizarEstadoPedido(guardada);
@@ -154,7 +174,9 @@ public class OrdenProduccionEntityRepository implements OrdenProduccionRepositor
     }
 
     @Override
-    public OrdenProduccionDto finalizar(Integer idOrden, BigDecimal producida, BigDecimal merma, String observacion, Integer idUsuario) {
+    public OrdenProduccionDto finalizar(Integer idOrden, BigDecimal producida, BigDecimal merma,
+                                        String observacion, Integer idUsuario,
+                                        List<ConsumoMaterialDto> consumos) {
         OrdenProduccionEntity orden = ordenProduccion.findById(idOrden)
                 .orElseThrow(() -> new RuntimeException("Orden no encontrada " + idOrden));
         if (orden.getFechaFin() != null) {
@@ -164,14 +186,35 @@ public class OrdenProduccionEntityRepository implements OrdenProduccionRepositor
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado " + idUsuario));
         BigDecimal unidadesTotales = producida.add(merma);
         Integer idBolsa = orden.getDetallePedido().getBolsa().getIdBolsa();
-        for (RecetaBolsaEntity r : recetaBolsa.findByIdBolsa(idBolsa)) {
-            MaterialEntity m = material.findByIdForUpdate(r.getMaterial().getIdMaterial())
-                    .orElseThrow(() -> new RuntimeException("Material no encontrado"));
-            BigDecimal consumo = r.getCantidadRequerida().multiply(unidadesTotales);
+
+        // TreeMap: se recorre por id de material, el mismo orden de bloqueo que en iniciar
+        Map<Integer, BigDecimal> aConsumir = new TreeMap<>();
+        if (consumos == null || consumos.isEmpty()) {
+            for (RecetaBolsaEntity r : recetaBolsa.findByIdBolsa(idBolsa)) {
+                aConsumir.merge(r.getMaterial().getIdMaterial(),
+                        r.getCantidadRequerida().multiply(unidadesTotales), BigDecimal::add);
+            }
+        } else {
+            for (ConsumoMaterialDto c : consumos) {
+                if (c.idMaterial() == null || c.cantidad() == null || c.cantidad().signum() <= 0) {
+                    throw new IllegalStateException(
+                            "Cada consumo necesita un material y una cantidad mayor que cero");
+                }
+                aConsumir.merge(c.idMaterial(), c.cantidad(), BigDecimal::add);
+            }
+        }
+        if (aConsumir.isEmpty()) {
+            throw new IllegalStateException("La orden no tiene materiales por descontar");
+        }
+
+        for (Map.Entry<Integer, BigDecimal> e : aConsumir.entrySet()) {
+            MaterialEntity m = material.findByIdForUpdate(e.getKey())
+                    .orElseThrow(() -> new RuntimeException("Material no encontrado " + e.getKey()));
+            BigDecimal consumo = e.getValue();
             BigDecimal antes = m.getStockActual();
             if (antes.compareTo(consumo) < 0) {
                 throw new IllegalStateException("Stock insuficiente de " + m.getName()
-                    + ": se necesitan " + consumo + " y has " + antes);
+                        + ": se necesitan " + consumo + " y hay " + antes);
             }
             BigDecimal despues = antes.subtract(consumo);
             m.setStockActual(despues);
@@ -189,6 +232,7 @@ public class OrdenProduccionEntityRepository implements OrdenProduccionRepositor
             mov.setCostoUnitario(gastoCr.findUltimoCosto(m.getIdMaterial()).orElse(null));
             movimientoInventario.save(mov);
         }
+
         orden.setCantidadProducida(producida);
         orden.setCantidadMerma(merma);
         orden.setObservacion(observacion);
@@ -198,6 +242,50 @@ public class OrdenProduccionEntityRepository implements OrdenProduccionRepositor
         OrdenProduccionEntity guardada = ordenProduccion.save(orden);
         sincronizarEstadoPedido(guardada);
         return produccionMapper.toDto(guardada);
+    }
+
+    /** Materiales de la receta con la cantidad calculada para (producida + merma). */
+    @Override
+    public List<ConsumoSugeridoDto> consumoSugerido(Integer idOrden, BigDecimal producida, BigDecimal merma) {
+        OrdenProduccionEntity orden = ordenProduccion.findById(idOrden)
+                .orElseThrow(() -> new RuntimeException("Orden no encontrada " + idOrden));
+        BigDecimal total = producida.add(merma);
+        return recetaBolsa.findByIdBolsa(orden.getDetallePedido().getBolsa().getIdBolsa())
+                .stream()
+                .map(r -> new ConsumoSugeridoDto(
+                        r.getMaterial().getIdMaterial(),
+                        r.getMaterial().getName(),
+                        r.getMaterial().getUnidadMedida(),
+                        r.getCantidadRequerida().multiply(total)))
+                .toList();
+    }
+
+    private boolean esIntercambiable(MaterialEntity m) {
+        return m.getName() != null
+                && m.getName().trim().toUpperCase().startsWith("TINTA");
+    }
+
+    private List<MaterialFaltanteDto> calcularFaltantes(OrdenProduccionEntity orden,
+                                                        List<RecetaBolsaEntity> receta,
+                                                        Map<Integer, MaterialEntity> materiales) {
+        List<MaterialFaltanteDto> faltantes = new ArrayList<>();
+        for (RecetaBolsaEntity r : receta) {
+            MaterialEntity m = (materiales != null)
+                    ? materiales.get(r.getMaterial().getIdMaterial())
+                    : r.getMaterial();
+            BigDecimal requerido = r.getCantidadRequerida().multiply(orden.getCantidadProducir());
+            BigDecimal comprometido = ordenProduccion.materialComprometido(
+                    m.getIdMaterial(), orden.getIdOrden());
+            if (comprometido == null) comprometido = BigDecimal.ZERO;
+            BigDecimal disponible = m.getStockActual().subtract(comprometido);
+
+            if (disponible.compareTo(requerido) < 0) {
+                faltantes.add(new MaterialFaltanteDto(
+                        m.getIdMaterial(), m.getName(), requerido, disponible,
+                        requerido.subtract(disponible)));
+            }
+        }
+        return faltantes;
     }
 
     private void sincronizarEstadoPedido(OrdenProduccionEntity orden) {

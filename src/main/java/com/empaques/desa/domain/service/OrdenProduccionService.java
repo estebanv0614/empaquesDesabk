@@ -1,5 +1,7 @@
 package com.empaques.desa.domain.service;
 
+import com.empaques.desa.domain.dto.ConsumoMaterialDto;
+import com.empaques.desa.domain.dto.ConsumoSugeridoDto;
 import com.empaques.desa.domain.dto.MaterialFaltanteDto;
 import com.empaques.desa.domain.dto.OrdenProduccionDto;
 import com.empaques.desa.domain.repository.OrdenProduccionRepository;
@@ -38,8 +40,12 @@ public class OrdenProduccionService {
         return produccionRepository.delete(id);
     }
 
-    public  List<MaterialFaltanteDto> validarMaterial(Integer id) {
+    public List<MaterialFaltanteDto> validarMaterial(Integer id) {
         return produccionRepository.validarMaterial(id);
+    }
+
+    public List<ConsumoSugeridoDto> consumoSugerido(Integer id, BigDecimal producida, BigDecimal merma) {
+        return produccionRepository.consumoSugerido(id, producida, merma);
     }
 
     @Transactional
@@ -48,8 +54,9 @@ public class OrdenProduccionService {
     }
 
     @Transactional
-    public OrdenProduccionDto finalizar (Integer id, BigDecimal producida, BigDecimal merma,
-                                         String observacion, Integer idUsuario) {
-        return produccionRepository.finalizar(id, producida, merma, observacion, idUsuario);
+    public OrdenProduccionDto finalizar(Integer id, BigDecimal producida, BigDecimal merma,
+                                        String observacion, Integer idUsuario,
+                                        List<ConsumoMaterialDto> consumos) {
+        return produccionRepository.finalizar(id, producida, merma, observacion, idUsuario, consumos);
     }
 }

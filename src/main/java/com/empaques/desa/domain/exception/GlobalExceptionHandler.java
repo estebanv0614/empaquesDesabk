@@ -11,8 +11,8 @@ import java.util.Map;
 public class GlobalExceptionHandler extends RuntimeException {
 
     @ExceptionHandler(IllegalStateException.class)
-    public ResponseEntity<Map<String, String>> handleIllegalState(IllegalStateException ex) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<Map<String, String>> handleIllegalState(IllegalStateException ex){
+        return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body(Map.of("message", ex.getMessage()));
     }
 }

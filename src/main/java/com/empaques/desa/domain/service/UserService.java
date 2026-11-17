@@ -4,11 +4,14 @@ package com.empaques.desa.domain.service;
 import com.empaques.desa.domain.dto.LoginDto;
 import com.empaques.desa.domain.dto.RolDto;
 import com.empaques.desa.domain.dto.UserDto;
+import com.empaques.desa.domain.exception.InvalidPasswordException;
+import com.empaques.desa.domain.exception.UserNotFoundException;
 import com.empaques.desa.domain.repository.UserRepository;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,9 +21,11 @@ import java.util.Optional;
 public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public List<UserDto> getAll() {
@@ -32,11 +37,16 @@ public class UserService implements UserDetailsService {
     }
 
     public UserDto save(UserDto dto) {
-        return userRepository.save(dto);
+        return userRepository.save(conPassword(dto, passwordEncoder.encode(dto.password())));
     }
 
     public Optional<UserDto> update(Integer id, UserDto dto) {
-        return userRepository.update(id, dto);
+        return userRepository.getById(id).flatMap(actual -> {
+            String password = (dto.password() == null || dto.password().isBlank())
+                    ? actual.password()
+                    : passwordEncoder.encode(dto.password());
+            return userRepository.update(id, conPassword(dto, password));
+        });
     }
 
     public boolean delete(Integer id) {
@@ -48,7 +58,12 @@ public class UserService implements UserDetailsService {
     }
 
     public UserDto login(LoginDto dto) {
-        return userRepository.login(dto);
+        UserDto user = userRepository.getByUsername(dto.getUsername())
+                .orElseThrow(() -> new UserNotFoundException(dto.getUsername()));
+        if (!passwordEncoder.matches(dto.getPassword(), user.password())) {
+            throw new InvalidPasswordException();
+        }
+        return user;
     }
 
     public boolean deactivate(Integer id){
@@ -78,5 +93,9 @@ public class UserService implements UserDetailsService {
     }
     public Optional<UserDto> getByUsername(String username) {
         return userRepository.getByUsername(username);
+    }
+
+    private UserDto conPassword(UserDto d, String password) {
+        return new UserDto(d.id(), d.person(), d.username(), password, d.activo(), d.roles());
     }
 }

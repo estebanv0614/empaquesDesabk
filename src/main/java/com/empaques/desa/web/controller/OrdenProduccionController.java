@@ -1,8 +1,6 @@
 package com.empaques.desa.web.controller;
 
-import com.empaques.desa.domain.dto.MaterialFaltanteDto;
-import com.empaques.desa.domain.dto.OrdenProduccionDto;
-import com.empaques.desa.domain.dto.UserDto;
+import com.empaques.desa.domain.dto.*;
 import com.empaques.desa.domain.service.OrdenProduccionService;
 import com.empaques.desa.domain.service.UserService;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +22,8 @@ public class OrdenProduccionController {
         this.userSer = userSer;
     }
 
-    public record FinalizarOrdenRequest(BigDecimal cantidadProducida, BigDecimal cantidadMerma, String observacion) {}
+    public record FinalizarOrdenRequest(BigDecimal cantidadProducida, BigDecimal cantidadMerma,
+                                        String observacion, List<ConsumoMaterialDto> consumos) {}
 
     @GetMapping
     public List<OrdenProduccionDto> getAll() {
@@ -37,6 +36,7 @@ public class OrdenProduccionController {
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
+
     @PostMapping
     public ResponseEntity<OrdenProduccionDto> create(@RequestBody OrdenProduccionDto dto) {
         return ResponseEntity.ok(produccionService.save(dto));
@@ -63,6 +63,14 @@ public class OrdenProduccionController {
         return produccionService.validarMaterial(id);
     }
 
+    /** Materiales de la receta con la cantidad calculada para (producida + merma). */
+    @GetMapping("/{id}/consumo-sugerido")
+    public List<ConsumoSugeridoDto> consumoSugerido(@PathVariable Integer id,
+                                                    @RequestParam BigDecimal producida,
+                                                    @RequestParam(defaultValue = "0") BigDecimal merma) {
+        return produccionService.consumoSugerido(id, producida, merma);
+    }
+
     @PatchMapping("/{id}/iniciar")
     public ResponseEntity<OrdenProduccionDto> iniciar(@PathVariable Integer id) {
         return ResponseEntity.ok(produccionService.iniciar(id));
@@ -75,6 +83,7 @@ public class OrdenProduccionController {
         UserDto user = userSer.getByUsername(authentication.getName())
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
         return ResponseEntity.ok(produccionService.finalizar(
-                id, body.cantidadProducida(), body.cantidadMerma(), body.observacion(), user.id()));
+                id, body.cantidadProducida(), body.cantidadMerma(), body.observacion(),
+                user.id(), body.consumos()));
     }
 }

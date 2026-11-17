@@ -1,5 +1,6 @@
 package com.empaques.desa.domain.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
@@ -15,6 +16,7 @@ public record UserDto(
 
         @NotBlank(message = "Password obligatoria")
         @Size(min = 6)
+        @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
         String password,
         Boolean activo,
         Set<RolDto> roles

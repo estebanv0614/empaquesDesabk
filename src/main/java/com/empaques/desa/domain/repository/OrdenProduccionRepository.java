@@ -1,5 +1,7 @@
 package com.empaques.desa.domain.repository;
 
+import com.empaques.desa.domain.dto.ConsumoMaterialDto;
+import com.empaques.desa.domain.dto.ConsumoSugeridoDto;
 import com.empaques.desa.domain.dto.MaterialFaltanteDto;
 import com.empaques.desa.domain.dto.OrdenProduccionDto;
 
@@ -16,6 +18,9 @@ public interface OrdenProduccionRepository {
     OrdenProduccionDto crearDesdeDetalle(Integer idDetallePedido, Integer idUsuario);
     List<MaterialFaltanteDto> validarMaterial (Integer idOrden);
     OrdenProduccionDto iniciar (Integer idOrden);
-    OrdenProduccionDto finalizar (Integer idOrden, BigDecimal producida, BigDecimal merma,
-                                  String observacion, Integer idUsuario);
+    OrdenProduccionDto finalizar(Integer idOrden, BigDecimal producida, BigDecimal merma,
+                                 String observacion, Integer idUsuario,
+                                 List<ConsumoMaterialDto> consumos);
+
+    List<ConsumoSugeridoDto> consumoSugerido(Integer idOrden, BigDecimal producida, BigDecimal merma);
 }

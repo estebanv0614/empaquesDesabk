@@ -32,7 +32,7 @@ public class MaterialEntity {
     @Column(name = "unidad_medida")
     private String unidadMedida;
 
-    private String cotegoria;
+    private String categoria;
 
     @Column(name = "stock_minimo")
     private BigDecimal stockMinimo = BigDecimal.ZERO;

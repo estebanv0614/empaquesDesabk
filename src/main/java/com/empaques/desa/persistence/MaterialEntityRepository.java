@@ -52,7 +52,7 @@ public class MaterialEntityRepository implements MaterialRepository {
                 .map(entity ->  {
                     entity.setName(dto.name());
                     entity.setUnidadMedida(dto.unidadMedida());
-                    entity.setCotegoria(dto.categoria());
+                    entity.setCategoria(dto.categoria());
                     entity.setStockMinimo(dto.stockMinimo());
                     MaterialEntity updated = crudMaterial.save(entity);
                     return materialMapper.toDto(updated);

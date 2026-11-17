@@ -13,4 +13,17 @@ import java.util.Optional;
 
 public interface CrudOrdenProduccionEntity extends CrudRepository<OrdenProduccionEntity, Integer> {
     List<OrdenProduccionEntity> findByDetallePedido_Pedido_IdPedido(Integer idPedido);
+
+    @Query("""
+            SELECT SUM(r.cantidadRequerida * o.cantidadProducir)
+            FROM OrdenProduccionEntity o, RecetaBolsaEntity r
+            WHERE r.bolsa.idBolsa = o.detallePedido.bolsa.idBolsa
+              AND r.material.idMaterial = :idMaterial
+              AND o.fechaProduccion IS NOT NULL
+              AND o.fechaFin IS NULL
+              AND o.idOrden <> :idOrden
+            """)
+
+    BigDecimal materialComprometido(@Param("idMaterial") Integer idMaterial,
+                                    @Param("idOrden") Integer idOrden);
 }
